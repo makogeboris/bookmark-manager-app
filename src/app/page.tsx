@@ -1,3 +1,9 @@
+import Header from "@/components/app/Header";
+
 export default function Home() {
-  return <div>Bookmark manager</div>;
+  return (
+    <>
+      <Header />
+    </>
+  );
 }
