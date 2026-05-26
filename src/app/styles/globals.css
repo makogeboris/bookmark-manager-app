@@ -13,6 +13,8 @@
   --breakpoint-lg: 1110px;
 
   --font-sans: var(--font-manrope);
+
+  --radius-12: 12px;
 }
 
 @theme inline {
@@ -75,7 +77,7 @@
   --primary-foreground: hsl(0, 0%, 100%); /* Neutral 0    #FFFFFF  */
 
   /* Secondary — Neutral 300 */
-  --secondary: hsl(165, 21%, 89%); /* Neutral 300  #DDE9E7  */
+  --secondary: hsl(168, 21%, 93%); /* Neutral 100  #E8F0EF  */
   --secondary-foreground: hsl(170, 62%, 5%); /* Neutral 900  #051513  */
 
   /* Muted — Neutral 100 */
@@ -126,7 +128,7 @@
   --foreground: hsl(0, 0%, 100%); /* Neutral 0    #FFFFFF  */
 
   /* Cards & Popovers */
-  --card: hsl(179, 100%, 13%); /* Neutral 500  #004241  */
+  --card: hsl(180, 100%, 6%); /* Neutral 800  #001F1F  */
   --card-foreground: hsl(0, 0%, 100%); /* Neutral 0    #FFFFFF  */
   --popover: hsl(179, 100%, 9%); /* Neutral 600  #002E2D  */
   --popover-foreground: hsl(0, 0%, 100%); /* Neutral 0    #FFFFFF  */
@@ -181,10 +183,18 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(165, 13%, 78%) transparent;
   }
+
+  .dark * {
+    scrollbar-color: hsl(179, 100%, 13%) transparent;
+  }
+
   body {
     @apply bg-background text-foreground font-sans;
   }
+
   html {
     @apply font-sans;
   }
@@ -194,6 +204,10 @@
   box-shadow: inset 0px 0px 0px 1px rgba(34, 38, 39, 0.12);
 }
 
-.profile-shadow {
+.dropdown-shadow {
   box-shadow: 0px 6px 14px rgba(34, 38, 39, 0.1);
+}
+
+.card-shadow {
+  box-shadow: 0px 2px 4px rgba(21, 21, 21, 0.06);
 }

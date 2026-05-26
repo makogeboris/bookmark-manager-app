@@ -58,6 +58,7 @@ export default function Sidebar({
         <Link href="/">
           <div className="h-8 w-auto dark:hidden">
             <Image
+              loading="eager"
               src="/images/logo-light-theme.svg"
               alt="Bookmark Manager"
               width={160}
@@ -67,6 +68,7 @@ export default function Sidebar({
           </div>
           <div className="h-8 w-auto hidden dark:block">
             <Image
+              loading="eager"
               src="/images/logo-dark-theme.svg"
               alt="Bookmark Manager"
               width={160}
@@ -81,7 +83,7 @@ export default function Sidebar({
           variant="ghost"
           onClick={close}
           aria-label="Close sidebar"
-          className="md:hidden absolute flex items-center justify-center rounded-md text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-150 top-3 right-3"
+          className="lg:hidden absolute flex items-center justify-center rounded-md text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-150 top-3 right-3"
         >
           {Icons.close}
         </Button>
@@ -130,9 +132,18 @@ export default function Sidebar({
 
       {/* Tags */}
       <div className="px-3 flex flex-col min-h-0 flex-1">
-        <p className="px-3 pb-2.5 text-xs font-bold uppercase tracking-widest text-sidebar-foreground/80 select-none">
-          Tags
-        </p>
+        <div className="flex items-center justify-between pl-3 pr-2 pb-2.5">
+          <p className="text-xs font-bold uppercase tracking-widest text-sidebar-foreground/80 select-none">
+            Tags
+          </p>
+
+          <Button
+            variant="ghost"
+            className="text-xs font-medium text-muted-foreground/90 underline underline-offset-2 hover:bg-transparent"
+          >
+            Reset
+          </Button>
+        </div>
 
         <ul className="flex-1 overflow-y-auto space-y-px pr-0.5 pb-12 scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent">
           {tags.map((tag) => {
@@ -159,7 +170,7 @@ export default function Sidebar({
 
   return (
     <>
-      <aside className="hidden md:flex flex-col w-74 shrink-0 h-screen sticky top-0 bg-sidebar border-r border-sidebar-border overflow-hidden">
+      <aside className="hidden lg:flex flex-col w-74 shrink-0 h-screen sticky top-0 bg-sidebar border-r border-sidebar-border overflow-hidden">
         {content}
       </aside>
 
@@ -167,14 +178,14 @@ export default function Sidebar({
       {open && (
         <div
           onClick={close}
-          className="fixed inset-0 z-40 bg-black/80 md:hidden"
+          className="fixed inset-0 z-40 bg-black/80 lg:hidden"
           aria-hidden="true"
         />
       )}
 
       {/* Mobile drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-70 sm:w-75 bg-sidebar border-r border-sidebar-border overflow-hidden md:hidden transition-transform duration-300 ease-in-out
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-70 sm:w-75 bg-sidebar border-r border-sidebar-border overflow-hidden lg:hidden transition-transform duration-300 ease-in-out
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
         aria-label="Sidebar navigation"
