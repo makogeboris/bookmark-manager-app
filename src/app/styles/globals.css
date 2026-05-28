@@ -14,6 +14,7 @@
 
   --font-sans: var(--font-manrope);
 
+  --radius-10: 10px;
   --radius-12: 12px;
 }
 
@@ -94,7 +95,7 @@
 
   /* Borders & Inputs */
   --border: hsl(165, 13%, 78%); /* Neutral 400  #COCFCC  */
-  --input: hsl(165, 21%, 89%); /* Neutral 300  #DDE9E7  */
+  --input: hsl(165, 6%, 56%); /* Neutral 500  #899492  */
   --ring: hsl(178, 97%, 14%); /* Teal 700     #014745  */
 
   /* Charts — light scale (light → dark) */
@@ -155,7 +156,7 @@
 
   /* Borders & Inputs */
   --border: hsl(179, 100%, 13%); /* Neutral 500  #004241  */
-  --input: hsl(179, 100%, 13%); /* Neutral 500  #004241  */
+  --input: hsl(178, 100%, 22%); /* Neutral 300  #00706E  */
   --ring: hsl(180, 5%, 71%); /* Neutral 100  #B1B9B9  */
 
   /* Charts — dark scale (light → dark) */

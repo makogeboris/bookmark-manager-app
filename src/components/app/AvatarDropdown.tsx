@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "./ThemeToggle ";
+import Link from "next/link";
 
 export default function AvatarDropdown() {
   return (
@@ -20,7 +21,7 @@ export default function AvatarDropdown() {
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full focus-visible:outline-none [&:focus-visible>span]:ring-2 [&:focus-visible>span]:ring-ring [&:focus-visible>span]:ring-offset-2 [&:focus-visible>span]:rounded-full"
+          className="[&:focus-visible>span]:ring-ring rounded-full focus-visible:outline-none [&:focus-visible>span]:rounded-full [&:focus-visible>span]:ring-2 [&:focus-visible>span]:ring-offset-2"
         >
           <Avatar size="lg">
             <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
@@ -29,7 +30,7 @@ export default function AvatarDropdown() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-full mt-2" align="end">
+      <DropdownMenuContent className="mt-2 w-full" align="end">
         <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
           className="cursor-pointer"
@@ -40,10 +41,10 @@ export default function AvatarDropdown() {
           </Avatar>
 
           <div className="flex flex-col">
-            <p className="text-card-foreground font-semibold text-sm">
+            <p className="text-card-foreground text-sm font-semibold">
               Emily Carter
             </p>
-            <p className="text-muted-foreground font-semibold text-sm">
+            <p className="text-muted-foreground text-sm font-semibold">
               emily101@gmail.com
             </p>
           </div>
@@ -53,7 +54,7 @@ export default function AvatarDropdown() {
 
         <DropdownMenuItemTheme
           onSelect={(e) => e.preventDefault()}
-          className="flex justify-between text-muted-foreground font-semibold"
+          className="text-muted-foreground flex justify-between font-semibold"
         >
           <div className="flex items-center gap-3">
             <Palette className="text-muted-foreground" />
@@ -66,10 +67,10 @@ export default function AvatarDropdown() {
 
         <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
-          className="cursor-pointer text-muted-foreground font-semibold"
+          className="text-muted-foreground cursor-pointer font-semibold"
         >
           <LogOutIcon className="text-muted-foreground" />
-          Sign Out
+          <Link href="/login">Sign Out</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

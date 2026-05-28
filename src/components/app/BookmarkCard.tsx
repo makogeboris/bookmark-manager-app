@@ -35,12 +35,12 @@ export default function BookmarkCard({
   const displayUrl = url.replace(/^https?:\/\//, "");
 
   return (
-    <Card className="bg-card radius-12 card-shadow shadow-none border-transparent pb-0">
+    <Card className="bg-card card-shadow rounded-10 border-transparent pb-0 shadow-none">
       <CardContent className="flex flex-col gap-4 px-0">
-        <div className="px-4 flex flex-col gap-4">
-          <div className="flex items-start justify-between gap-3 ">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="size-10 shrink-0 rounded-md border border-accent bg-background flex items-center justify-center overflow-hidden">
+        <div className="flex flex-col gap-4 px-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="border-accent bg-background flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
                 {favicon ? (
                   <Image
                     width={44}
@@ -49,17 +49,17 @@ export default function BookmarkCard({
                     alt={title}
                   />
                 ) : (
-                  <span className="text-xs font-bold text-muted-foreground">
+                  <span className="text-muted-foreground text-xs font-bold">
                     {title.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
 
               <div className="min-w-0">
-                <h3 className="text-xl font-bold text-card-foreground leading-snug truncate">
+                <h3 className="text-card-foreground truncate text-xl leading-snug font-bold">
                   {title}
                 </h3>
-                <p className="text-xs font-medium text-muted-foreground truncate">
+                <p className="text-muted-foreground truncate text-xs font-medium">
                   {displayUrl}
                 </p>
               </div>
@@ -71,7 +71,7 @@ export default function BookmarkCard({
           <Separator />
 
           {description && (
-            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+            <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
               {description}
             </p>
           )}
@@ -82,7 +82,7 @@ export default function BookmarkCard({
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="rounded-xs px-2 py-1 text-xs font-medium bg-secondary text-accent-foreground border-0"
+                  className="bg-secondary text-accent-foreground rounded-xs border-0 px-2 py-1 text-xs font-medium"
                 >
                   {tag}
                 </Badge>
@@ -91,8 +91,8 @@ export default function BookmarkCard({
           )}
         </div>
 
-        <CardFooter className="px-4 border-t border-t-accent flex items-center justify-between py-3">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+        <CardFooter className="border-t-accent flex items-center justify-between border-t px-4 py-3">
+          <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
             {views !== undefined && (
               <span className="flex items-center gap-1.5">
                 {Icons.eye}
@@ -119,7 +119,7 @@ export default function BookmarkCard({
             size="icon"
             variant="ghost"
             onClick={onPinClick}
-            className={`shrink-0 size-4 text-muted-foreground hover:text-foreground hover:bg-none ${
+            className={`text-muted-foreground hover:text-foreground size-4 shrink-0 hover:bg-none ${
               pinned ? "text-foreground" : ""
             }`}
           >

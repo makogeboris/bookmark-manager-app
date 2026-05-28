@@ -12,12 +12,12 @@ export default function SearchBar() {
         </Label>
         <div className="relative w-full">
           <Input
-            className="pl-10"
+            className="border-accent pl-10"
             type="search"
             placeholder="Search by title..."
           />
           <Search
-            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
             size={16}
           />
         </div>
