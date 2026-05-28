@@ -15,7 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="bg-background flex min-h-screen">
       <Sidebar
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         onTagToggle={handleTagToggle}
       />
 
-      <div className="flex flex-col flex-1 min-w-0">
+      <div className="flex min-w-0 flex-1 flex-col">
         <Header onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1">{children}</main>
       </div>
