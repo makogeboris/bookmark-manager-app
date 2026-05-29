@@ -151,8 +151,8 @@
   --accent-foreground: hsl(0, 0%, 100%); /* Neutral 0    #FFFFFF  */
 
   /* Destructive */
-  --destructive: hsl(2, 98%, 62%); /* Red 600      #FD4740  */
-  --destructive-hover: hsl(2, 96%, 41%); /* Red 800      #CB0A04  */
+  --destructive: hsl(2, 96%, 41%); /* Red 800      #CB0A04  */
+  --destructive-hover: hsl(2, 98%, 62%); /* Red 600      #FD4740  */
 
   /* Borders & Inputs */
   --border: hsl(179, 100%, 13%); /* Neutral 500  #004241  */

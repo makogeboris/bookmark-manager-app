@@ -26,14 +26,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
         <div className="flex items-center gap-2.5 sm:gap-4">
           <AddBookmark />
-          {/* <Button size="icon-lg" className="md:hidden">
-            {Icons.plus}
-          </Button>
 
-          <Button className="hidden md:flex" size="xxl">
-            {Icons.plus}
-            <span>Add Bookmark</span>
-          </Button> */}
           <AvatarDropdown />
         </div>
       </div>

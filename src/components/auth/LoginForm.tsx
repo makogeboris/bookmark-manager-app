@@ -92,8 +92,3 @@ export function LoginForm({
     </div>
   );
 }
-
-// background: #001F1F;
-// border: 1px solid #004241;
-// box-shadow: 0px 2px 4px rgba(21, 21, 21, 0.06);
-// border-radius: 12px;
