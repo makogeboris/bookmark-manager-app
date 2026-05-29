@@ -6,6 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Icons } from "./Icons";
+import EditBookmark from "./EditBookmark";
+import ArchiveBookmark from "./ArchiveBookmark";
+import UnarchiveBookmark from "./UnarchiveBookmark";
+import DeleteBookmark from "./DeleteBookmark";
 
 export default function ActionsDropdown() {
   return (
@@ -14,47 +18,35 @@ export default function ActionsDropdown() {
         <Button
           size="icon"
           variant="outline"
-          className="shrink-0 size-8 rounded-md border-border bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent"
+          className="border-border text-muted-foreground hover:text-foreground hover:bg-accent size-8 shrink-0 rounded-md bg-transparent"
         >
           {Icons.dots}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-full md:min-w-50 p-1 mt-1">
-        <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
+      <DropdownMenuContent align="end" className="mt-1 w-full p-1 md:min-w-50">
+        <DropdownMenuItem className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold">
           {Icons.visit}
           Visit
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
+        <DropdownMenuItem className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold">
           {Icons.copy}
           Copy URL
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
+        <DropdownMenuItem className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold">
           {Icons.pin}
           Pin
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
-          {Icons.edit}
-          Edit
-        </DropdownMenuItem>
+        <EditBookmark />
 
-        <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
-          {Icons.archive}
-          Archive
-        </DropdownMenuItem>
+        <ArchiveBookmark />
 
-        {/* <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
-          {Icons.unarchive}
-          Unarchive
-        </DropdownMenuItem>
+        <UnarchiveBookmark />
 
-        <DropdownMenuItem className="flex items-center gap-2.5 font-semibold text-muted-foreground px-2!">
-          {Icons.delete}
-          Delete
-        </DropdownMenuItem> */}
+        <DeleteBookmark />
       </DropdownMenuContent>
     </DropdownMenu>
   );
