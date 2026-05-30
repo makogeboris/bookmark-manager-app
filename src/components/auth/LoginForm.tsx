@@ -64,11 +64,20 @@ export function LoginForm({
               </Field>
 
               <Field className="mt-2 gap-3">
-                <Button size="xxl" type="submit">
+                <Button
+                  size="lg"
+                  type="submit"
+                  className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
+                >
                   Login
                 </Button>
 
-                <Button size="xxl" variant="outline" type="button">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  type="button"
+                  className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
+                >
                   Login with Google
                 </Button>
               </Field>
@@ -80,9 +89,14 @@ export function LoginForm({
                 </FieldDescription>
               </Field>
 
-              <FieldSeparator className="my-3" />
+              <FieldSeparator className="my-2 sm:my-3" />
 
-              <Button size="xxl" variant="demo" type="button">
+              <Button
+                size="lg"
+                variant="demo"
+                type="button"
+                className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
+              >
                 Try the demo
               </Button>
             </FieldGroup>
