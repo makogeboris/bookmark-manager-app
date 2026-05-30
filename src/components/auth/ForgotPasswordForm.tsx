@@ -50,7 +50,11 @@ export function ForgotPasswordForm({
               </Field>
 
               <Field>
-                <Button size="xxl" type="submit">
+                <Button
+                  size="lg"
+                  type="submit"
+                  className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
+                >
                   Send reset link
                 </Button>
               </Field>

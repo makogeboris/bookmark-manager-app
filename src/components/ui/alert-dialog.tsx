@@ -91,7 +91,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
+        "flex flex-col-reverse gap-3 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
         className,
       )}
       {...props}
@@ -160,7 +160,7 @@ function AlertDialogAction({
         data-slot="alert-dialog-action"
         className={cn(
           className,
-          "px-4 py-4 text-sm sm:px-6 sm:py-5 sm:text-base",
+          "px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base",
         )}
         {...props}
       />
@@ -181,7 +181,7 @@ function AlertDialogCancel({
         data-slot="alert-dialog-cancel"
         className={cn(
           className,
-          "border-input bg-transparent px-4 py-4 text-sm sm:px-6 sm:py-5 sm:text-base",
+          "border-input bg-transparent px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base",
         )}
         {...props}
       />
