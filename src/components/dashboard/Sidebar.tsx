@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
+import Logo from "../shared/Logo";
 
 interface Tag {
   name: string;
@@ -54,28 +54,9 @@ export default function Sidebar({
 
   const content = (
     <>
-      <div className="px-5 pt-5 pb-3 sm:px-5 relative">
+      <div className="relative px-5 pt-5 pb-3 sm:px-5">
         <Link href="/">
-          <div className="h-8 w-auto dark:hidden">
-            <Image
-              loading="eager"
-              src="/images/logo-light-theme.svg"
-              alt="Bookmark Manager"
-              width={160}
-              height={32}
-              className="h-full w-auto"
-            />
-          </div>
-          <div className="h-8 w-auto hidden dark:block">
-            <Image
-              loading="eager"
-              src="/images/logo-dark-theme.svg"
-              alt="Bookmark Manager"
-              width={160}
-              height={32}
-              className="h-full w-auto"
-            />
-          </div>
+          <Logo />
         </Link>
 
         <Button
@@ -83,14 +64,14 @@ export default function Sidebar({
           variant="ghost"
           onClick={close}
           aria-label="Close sidebar"
-          className="lg:hidden absolute flex items-center justify-center rounded-md text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors duration-150 top-3 right-3"
+          className="text-sidebar-foreground/60 hover:text-sidebar-foreground absolute top-3 right-3 flex items-center justify-center rounded-md transition-colors duration-150 lg:hidden"
         >
           {Icons.close}
         </Button>
       </div>
 
       {/* Nav items */}
-      <nav className="px-4 space-y-px py-4">
+      <nav className="space-y-px px-4 py-4">
         <Button
           variant="ghostSide"
           size="xl"
@@ -98,13 +79,11 @@ export default function Sidebar({
             onNavChange?.("home");
             close();
           }}
-          className={`group w-full flex items-center justify-start gap-2.5 px-3 py-2.75 rounded-sm text-base font-medium transition-colors duration-150
-            ${
-              activeNav === "home"
-                ? "bg-sidebar-accent text-sidebar-foreground"
-                : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-            }
-          `}
+          className={`group flex w-full items-center justify-start gap-2.5 rounded-sm px-3 py-2.75 text-base font-medium transition-colors duration-150 ${
+            activeNav === "home"
+              ? "bg-sidebar-accent text-sidebar-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+          } `}
         >
           {Icons.home}
           <span>Home</span>
@@ -117,13 +96,11 @@ export default function Sidebar({
             onNavChange?.("archived");
             close();
           }}
-          className={`group w-full flex justify-start gap-2.5 px-3 py-2.75 rounded-lg text-base font-medium transition-colors duration-150
-            ${
-              activeNav === "archived"
-                ? "bg-sidebar-accent text-sidebar-foreground"
-                : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-            }
-          `}
+          className={`group flex w-full justify-start gap-2.5 rounded-lg px-3 py-2.75 text-base font-medium transition-colors duration-150 ${
+            activeNav === "archived"
+              ? "bg-sidebar-accent text-sidebar-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+          } `}
         >
           {Icons.archive}
           <span>Archived</span>
@@ -131,32 +108,32 @@ export default function Sidebar({
       </nav>
 
       {/* Tags */}
-      <div className="px-3 flex flex-col min-h-0 flex-1">
-        <div className="flex items-center justify-between pl-3 pr-2 pb-2.5">
-          <p className="text-xs font-bold uppercase tracking-widest text-sidebar-foreground/80 select-none">
+      <div className="flex min-h-0 flex-1 flex-col px-3">
+        <div className="flex items-center justify-between pr-2 pb-2.5 pl-3">
+          <p className="text-sidebar-foreground/80 text-xs font-bold tracking-widest uppercase select-none">
             Tags
           </p>
 
           <Button
             variant="ghost"
-            className="text-xs font-medium text-muted-foreground/90 underline underline-offset-2 hover:bg-transparent"
+            className="text-muted-foreground/90 text-xs font-medium underline underline-offset-2 hover:bg-transparent"
           >
             Reset
           </Button>
         </div>
 
-        <ul className="flex-1 overflow-y-auto space-y-px pr-0.5 pb-12 scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent">
+        <ul className="scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent flex-1 space-y-px overflow-y-auto pr-0.5 pb-12">
           {tags.map((tag) => {
             const checked = selectedTags.includes(tag.name);
             return (
               <li key={tag.name} className="w-full">
-                <label className="flex items-center gap-2 px-3 py-2 rounded-sm text-base font-semibold cursor-pointer text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground transition-colors duration-150 group">
+                <label className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground group flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base font-semibold transition-colors duration-150">
                   <Checkbox
                     checked={checked}
                     onCheckedChange={() => onTagToggle?.(tag.name)}
                   />
                   <span className="flex-1">{tag.name}</span>
-                  <span className="min-w-5 h-5 px-1.5 flex items-center border border-sidebar-border justify-center rounded-full text-xs font-medium bg-sidebar-accent text-sidebar-foreground/60">
+                  <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
                     {tag.count}
                   </span>
                 </label>
@@ -170,7 +147,7 @@ export default function Sidebar({
 
   return (
     <>
-      <aside className="hidden lg:flex flex-col w-74 shrink-0 h-screen sticky top-0 bg-sidebar border-r border-sidebar-border overflow-hidden">
+      <aside className="bg-sidebar border-sidebar-border sticky top-0 hidden h-screen w-74 shrink-0 flex-col overflow-hidden border-r lg:flex">
         {content}
       </aside>
 
@@ -185,9 +162,7 @@ export default function Sidebar({
 
       {/* Mobile drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-70 sm:w-75 bg-sidebar border-r border-sidebar-border overflow-hidden lg:hidden transition-transform duration-300 ease-in-out
-          ${open ? "translate-x-0" : "-translate-x-full"}
-        `}
+        className={`bg-sidebar border-sidebar-border fixed inset-y-0 left-0 z-50 flex w-70 flex-col overflow-hidden border-r transition-transform duration-300 ease-in-out sm:w-75 lg:hidden ${open ? "translate-x-0" : "-translate-x-full"} `}
         aria-label="Sidebar navigation"
       >
         {content}

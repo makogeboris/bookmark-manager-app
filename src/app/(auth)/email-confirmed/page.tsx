@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { EmailConfirmed } from "@/components/auth/EmailConfirmed";
+
+export const metadata: Metadata = {
+  title: "Email Confirmed",
+};
 
 export default function Page() {
   return (

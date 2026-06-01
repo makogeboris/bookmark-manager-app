@@ -2,9 +2,9 @@ import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Icons } from "./Icons";
 import { Separator } from "../ui/separator";
 import ActionsDropdown from "./ActionsDropdown";
+import { Icons } from "../shared/Icons";
 
 interface BookmarkCardProps {
   title: string;

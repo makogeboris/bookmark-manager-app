@@ -1,7 +1,7 @@
 import SearchBar from "./SearchBar";
 import AvatarDropdown from "./AvatarDropdown";
 import { Button } from "../ui/button";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
 import AddBookmark from "./AddBookmark";
 
 interface HeaderProps {

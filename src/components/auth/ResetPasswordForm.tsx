@@ -15,7 +15,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import Link from "next/link";
-import Logo from "./Logo";
+import Logo from "../shared/Logo";
 import PasswordInput from "./PasswordInput";
 
 export function ResetPasswordForm({

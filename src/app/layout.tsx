@@ -1,10 +1,13 @@
 import "./styles/globals.css";
-import { manrope } from "./styles/fonts";
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/app/ThemeProvider";
+import { manrope } from "./styles/fonts";
+import { ThemeProvider } from "@/components/shared/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "Bookmark Manager",
+  title: {
+    template: "%s - Bookmark Manager",
+    default: "Bookmark Manager",
+  },
   description:
     "Save, organize, and access your favorite bookmarks from anywhere.",
   appleWebApp: {
@@ -20,6 +23,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${manrope.variable} antialiased`}
     >
