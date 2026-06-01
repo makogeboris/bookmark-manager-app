@@ -1,7 +1,12 @@
-import BookmarkCard from "@/components/app/BookmarkCard";
-import SortDropdown from "@/components/app/SortDropdown";
+import { Metadata } from "next";
+import BookmarkCard from "@/components/dashboard/BookmarkCard";
+import SortDropdown from "@/components/dashboard/SortDropdown";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
+
+export default function page() {
   return (
     <div className="flex flex-col gap-5 px-4 py-6 sm:p-8">
       <div className="flex items-center justify-between">

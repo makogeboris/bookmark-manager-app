@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import Logo from "./Logo";
+import Logo from "../shared/Logo";
 import PasswordInput from "./PasswordInput";
 
 export function LoginForm({

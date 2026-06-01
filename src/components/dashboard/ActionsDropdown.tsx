@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
 import EditBookmark from "./EditBookmark";
 import ArchiveBookmark from "./ArchiveBookmark";
 import UnarchiveBookmark from "./UnarchiveBookmark";

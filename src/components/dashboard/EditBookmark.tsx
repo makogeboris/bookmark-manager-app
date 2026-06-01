@@ -15,11 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
+import { DropdownMenuItem } from "../ui/dropdown-menu";
 
 const MAX_DESCRIPTION = 280;
 
-export default function AddBookmark() {
+export default function EditBookmark() {
   const [description, setDescription] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,24 +31,23 @@ export default function AddBookmark() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex">
-          <Button type="button" size="icon-lg" className="md:hidden">
-            {Icons.plus}
-          </Button>
-          <Button type="button" className="hidden md:flex" size="xxl">
-            {Icons.plus}
-            <span>Add Bookmark</span>
-          </Button>
-        </div>
+        <DropdownMenuItem
+          onSelect={(e) => e.preventDefault()}
+          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
+        >
+          {Icons.edit}
+          Edit
+        </DropdownMenuItem>
       </DialogTrigger>
 
       <DialogContent className="gap-6 sm:max-w-xl md:gap-8">
         <DialogHeader className="gap-2 md:gap-2.5">
           <DialogTitle className="text-foreground text-2xl font-bold">
-            Add a Bookmark
+            Edit bookmark
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-sm font-medium">
-            Save a link with details to keep your collection organized.
+            Update your saved link details — change the title, description, URL,
+            or tags anytime.
           </DialogDescription>
         </DialogHeader>
 

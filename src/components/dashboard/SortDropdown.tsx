@@ -11,7 +11,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
 
 export default function SortDropdown() {
   const [selected, setSelected] = React.useState("Recently added");
@@ -26,11 +26,11 @@ export default function SortDropdown() {
 
           <Button
             size="xl"
-            className=" items-center gap-2.5 p-3 hidden md:flex"
+            className="hidden items-center gap-2.5 p-3 md:flex"
             variant="outlineMenu"
           >
             {Icons.sort}
-            <span className="text-base font-semibold text-foreground">
+            <span className="text-foreground text-base font-semibold">
               Sort by
             </span>
           </Button>
@@ -39,26 +39,26 @@ export default function SortDropdown() {
 
       <DropdownMenuContent
         align="end"
-        className="w-full mt-1 p-1 min-w-45 md:min-w-50"
+        className="mt-1 w-full min-w-45 p-1 md:min-w-50"
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="sr-only">Sort By</DropdownMenuLabel>
           <DropdownMenuRadioGroup value={selected} onValueChange={setSelected}>
             <DropdownMenuRadioItem
               value="recentlyAdded"
-              className="flex items-center justify-between gap-4 font-semibold text-muted-foreground px-2!"
+              className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Recently added
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem
               value="recentlyVisited"
-              className="flex items-center justify-between gap-4 font-semibold text-muted-foreground px-2!"
+              className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Recently visited
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem
               value="mostlyVisited"
-              className="flex items-center justify-between gap-4 font-semibold text-muted-foreground px-2!"
+              className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Mostly visited
             </DropdownMenuRadioItem>

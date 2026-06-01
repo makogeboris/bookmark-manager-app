@@ -6,12 +6,24 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+function useIsMounted() {
+  return React.useSyncExternalStore(
+    (cb) => {
+      window.addEventListener("focus", cb);
+      return () => window.removeEventListener("focus", cb);
+    },
+    () => true,
+    () => false,
+  );
+}
+
 export function ThemeToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const active = resolvedTheme ?? theme;
+  const mounted = useIsMounted();
+  const active = mounted ? (resolvedTheme ?? theme) : null;
 
   return (
-    <div className="flex items-center rounded-xs bg-accent p-px">
+    <div className="bg-accent flex items-center rounded-xs p-px">
       <Button
         onClick={() => setTheme("light")}
         variant="ghost"

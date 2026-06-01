@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
 
 export default function DeleteBookmark() {
   return (

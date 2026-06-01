@@ -12,9 +12,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
-import { Icons } from "./Icons";
+import { Icons } from "../shared/Icons";
 
-export default function UnarchiveBookmark() {
+export default function ArchiveBookmark() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -22,22 +22,22 @@ export default function UnarchiveBookmark() {
           onSelect={(e) => e.preventDefault()}
           className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
         >
-          {Icons.unarchive}
-          Unarchive
+          {Icons.archive}
+          Archive
         </DropdownMenuItem>
       </AlertDialogTrigger>
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Unarchive bookmark</AlertDialogTitle>
+          <AlertDialogTitle>Archive bookmark</AlertDialogTitle>
           <AlertDialogDescription>
-            Move this bookmark back to your active list?
+            Are you sure you want to archive this bookmark?
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Unarchive</AlertDialogAction>
+          <AlertDialogAction>Archive</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
