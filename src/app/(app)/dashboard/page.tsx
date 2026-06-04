@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import BookmarkCard from "@/components/dashboard/BookmarkCard";
 import SortDropdown from "@/components/dashboard/SortDropdown";
+import PaginationComponent from "@/components/dashboard/Pagination";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -53,7 +54,81 @@ export default function page() {
           dateVisited="15 Jan"
           pinned={false}
         />
+
+        <BookmarkCard
+          title="Frontend Mentor"
+          url="https://frontendmentor.io"
+          favicon="/favicons/frontendmentor.png"
+          description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
+          tags={["Practice", "Learning", "Community"]}
+          views={47}
+          dateAdded="23 Sep"
+          dateVisited="15 Jan"
+          pinned={false}
+        />
+
+        <BookmarkCard
+          title="Frontend Mentor"
+          url="https://frontendmentor.io"
+          favicon="/favicons/frontendmentor.png"
+          description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
+          tags={["Practice", "Learning", "Community"]}
+          views={47}
+          dateAdded="23 Sep"
+          dateVisited="15 Jan"
+          pinned={false}
+        />
+
+        <BookmarkCard
+          title="Frontend Mentor"
+          url="https://frontendmentor.io"
+          favicon="/favicons/frontendmentor.png"
+          description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
+          tags={["Practice", "Learning", "Community"]}
+          views={47}
+          dateAdded="23 Sep"
+          dateVisited="15 Jan"
+          pinned={false}
+        />
+
+        <BookmarkCard
+          title="Frontend Mentor"
+          url="https://frontendmentor.io"
+          favicon="/favicons/frontendmentor.png"
+          description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
+          tags={["Practice", "Learning", "Community"]}
+          views={47}
+          dateAdded="23 Sep"
+          dateVisited="15 Jan"
+          pinned={false}
+        />
+
+        <BookmarkCard
+          title="Frontend Mentor"
+          url="https://frontendmentor.io"
+          favicon="/favicons/frontendmentor.png"
+          description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
+          tags={["Practice", "Learning", "Community"]}
+          views={47}
+          dateAdded="23 Sep"
+          dateVisited="15 Jan"
+          pinned={false}
+        />
+
+        <BookmarkCard
+          title="Frontend Mentor"
+          url="https://frontendmentor.io"
+          favicon="/favicons/frontendmentor.png"
+          description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
+          tags={["Practice", "Learning", "Community"]}
+          views={47}
+          dateAdded="23 Sep"
+          dateVisited="15 Jan"
+          pinned={false}
+        />
       </div>
+
+      <PaginationComponent />
     </div>
   );
 }
