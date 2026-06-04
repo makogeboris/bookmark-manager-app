@@ -14,7 +14,7 @@ function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
       role="navigation"
       aria-label="pagination"
       data-slot="pagination"
-      className={cn("mx-auto mt-4 flex w-full justify-center", className)}
+      className={cn("mx-auto flex w-full justify-center", className)}
       {...props}
     />
   );
@@ -70,7 +70,7 @@ function PaginationLink({
 
 function PaginationPrevious({
   className,
-  text = "Previous",
+  text = "Prev",
   ...props
 }: React.ComponentProps<typeof PaginationLink> & { text?: string }) {
   return (
