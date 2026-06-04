@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Icons } from "../shared/Icons";
+import AutoGenerate from "./AutoGenerate";
 
 const MAX_DESCRIPTION = 280;
 
@@ -43,9 +44,13 @@ export default function AddBookmark() {
 
       <DialogContent className="gap-6 sm:max-w-xl md:gap-8">
         <DialogHeader className="gap-2 md:gap-2.5">
-          <DialogTitle className="text-foreground text-2xl font-bold">
-            Add a Bookmark
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-foreground text-2xl font-bold">
+              Add a Bookmark
+            </DialogTitle>
+
+            <AutoGenerate />
+          </div>
           <DialogDescription className="text-muted-foreground text-sm font-medium">
             Save a link with details to keep your collection organized.
           </DialogDescription>

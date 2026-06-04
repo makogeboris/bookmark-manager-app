@@ -5,6 +5,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Icons } from "../shared/Icons";
 import Logo from "../shared/Logo";
+import { TagsSkeleton } from "./Skeletons";
 
 interface Tag {
   name: string;
@@ -141,6 +142,8 @@ export default function Sidebar({
             );
           })}
         </ul>
+
+        {/* <TagsSkeleton /> */}
       </div>
     </>
   );
