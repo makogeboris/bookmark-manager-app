@@ -20,7 +20,7 @@ export default function page() {
       </div>
 
       <div className="flex flex-col gap-8">
-        <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(338px,1fr))] gap-8">
+        <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(288px,1fr))] gap-8">
           <BookmarkCard
             title="Frontend Mentor"
             url="https://frontendmentor.io"
