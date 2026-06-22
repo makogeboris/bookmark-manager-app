@@ -60,3 +60,7 @@ next-env.d.ts
 *.pem
 .DS_Store
 Thumbs.db
+.vercel
+.env*.local
+
+/src/generated/prisma
