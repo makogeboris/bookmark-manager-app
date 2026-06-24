@@ -81,7 +81,7 @@ export function BookmarkCard({ bookmark, index }: BookmarkCardProps) {
       <div className="text-muted-foreground flex items-center gap-3 text-xs">
         <span className="flex items-center gap-1">
           {Icons.eye}
-          {bookmark.views}
+          {bookmark.visitCount}
         </span>
         <span className="flex items-center gap-1">
           {Icons.clock}
