@@ -5,7 +5,6 @@ import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Icons } from "../shared/Icons";
 import Logo from "../shared/Logo";
-import { TagsSkeleton } from "./Skeletons";
 
 interface Tag {
   name: string;
@@ -19,28 +18,9 @@ interface SidebarProps {
   onNavChange?: (nav: "home" | "archived") => void;
   selectedTags?: string[];
   onTagToggle?: (tag: string) => void;
+  onClearTags?: () => void;
   tags?: Tag[];
 }
-
-const DEFAULT_TAGS: Tag[] = [
-  { name: "Ai", count: 1 },
-  { name: "Community", count: 5 },
-  { name: "Compatibility", count: 1 },
-  { name: "CSS", count: 6 },
-  { name: "Design", count: 1 },
-  { name: "Framework", count: 2 },
-  { name: "Git", count: 1 },
-  { name: "HTML", count: 2 },
-  { name: "JavaScript", count: 3 },
-  { name: "Layout", count: 3 },
-  { name: "Learning", count: 6 },
-  { name: "Performance", count: 2 },
-  { name: "Practice", count: 5 },
-  { name: "Reference", count: 4 },
-  { name: "Tips", count: 4 },
-  { name: "Tools", count: 4 },
-  { name: "Tutorial", count: 3 },
-];
 
 export default function Sidebar({
   open = false,
@@ -49,7 +29,8 @@ export default function Sidebar({
   onNavChange,
   selectedTags = [],
   onTagToggle,
-  tags = DEFAULT_TAGS,
+  onClearTags,
+  tags = [],
 }: SidebarProps) {
   const close = () => onOpenChange?.(false);
 
@@ -84,7 +65,7 @@ export default function Sidebar({
             activeNav === "home"
               ? "bg-sidebar-accent text-sidebar-foreground"
               : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-          } `}
+          }`}
         >
           {Icons.home}
           <span>Home</span>
@@ -101,7 +82,7 @@ export default function Sidebar({
             activeNav === "archived"
               ? "bg-sidebar-accent text-sidebar-foreground"
               : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-          } `}
+          }`}
         >
           {Icons.archive}
           <span>Archived</span>
@@ -110,17 +91,20 @@ export default function Sidebar({
 
       {/* Tags */}
       <div className="flex min-h-0 flex-1 flex-col px-3">
-        <div className="flex items-center justify-between pr-2 pb-2.5 pl-3">
+        <div className="flex min-h-8.5 items-center justify-between pr-2 pb-2.5 pl-3">
           <p className="text-sidebar-foreground/80 text-xs font-bold tracking-widest uppercase select-none">
             Tags
           </p>
 
-          <Button
-            variant="ghost"
-            className="text-muted-foreground/90 text-xs font-medium underline underline-offset-2 hover:bg-transparent"
-          >
-            Reset
-          </Button>
+          {selectedTags.length > 0 && (
+            <Button
+              variant="ghost"
+              onClick={onClearTags}
+              className="text-muted-foreground/90 h-auto p-0 text-xs font-medium underline underline-offset-2 hover:bg-transparent"
+            >
+              Reset
+            </Button>
+          )}
         </div>
 
         <ul className="scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent flex-1 space-y-px overflow-y-auto pr-0.5 pb-12">
@@ -142,8 +126,6 @@ export default function Sidebar({
             );
           })}
         </ul>
-
-        {/* <TagsSkeleton /> */}
       </div>
     </>
   );
@@ -154,7 +136,6 @@ export default function Sidebar({
         {content}
       </aside>
 
-      {/* Mobile overlay backdrop */}
       {open && (
         <div
           onClick={close}
@@ -163,9 +144,10 @@ export default function Sidebar({
         />
       )}
 
-      {/* Mobile drawer */}
       <aside
-        className={`bg-sidebar border-sidebar-border fixed inset-y-0 left-0 z-50 flex w-70 flex-col overflow-hidden border-r transition-transform duration-300 ease-in-out sm:w-75 lg:hidden ${open ? "translate-x-0" : "-translate-x-full"} `}
+        className={`bg-sidebar border-sidebar-border fixed inset-y-0 left-0 z-50 flex w-70 flex-col overflow-hidden border-r transition-transform duration-300 ease-in-out sm:w-75 lg:hidden ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
         aria-label="Sidebar navigation"
       >
         {content}

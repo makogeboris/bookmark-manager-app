@@ -1,12 +1,17 @@
 import { ReactNode } from "react";
 
 export interface Bookmark {
-  id: number;
+  id: string;
   title: string;
   url: string;
-  tags: string[];
-  views: number;
   favicon: string;
+  description: string;
+  tags: string[];
+  pinned: boolean;
+  isArchived: boolean;
+  visitCount: number;
+  createdAt: string;
+  lastVisited: string | null;
 }
 
 export interface Feature {

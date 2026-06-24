@@ -13,9 +13,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Icons } from "../shared/Icons";
 
-export default function SortDropdown() {
-  const [selected, setSelected] = React.useState("Recently added");
+export type SortOption = "recently-added" | "recently-visited" | "most-visited";
 
+interface SortDropdownProps {
+  value: SortOption;
+  onChange: (value: SortOption) => void;
+}
+
+export default function SortDropdown({ value, onChange }: SortDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,7 +28,6 @@ export default function SortDropdown() {
           <Button variant="outlineMenu" size="icon-lg" className="md:hidden">
             {Icons.sort}
           </Button>
-
           <Button
             size="xl"
             className="hidden items-center gap-2.5 p-3 md:flex"
@@ -43,21 +47,24 @@ export default function SortDropdown() {
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="sr-only">Sort By</DropdownMenuLabel>
-          <DropdownMenuRadioGroup value={selected} onValueChange={setSelected}>
+          <DropdownMenuRadioGroup
+            value={value}
+            onValueChange={(v) => onChange(v as SortOption)}
+          >
             <DropdownMenuRadioItem
-              value="recentlyAdded"
+              value="recently-added"
               className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Recently added
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem
-              value="recentlyVisited"
+              value="recently-visited"
               className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Recently visited
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem
-              value="mostlyVisited"
+              value="most-visited"
               className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Mostly visited

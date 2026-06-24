@@ -65,7 +65,7 @@ export function HeroSection() {
               <ChevronRight />
             </Link>
             <Link
-              href="/dashboard"
+              href="/demo"
               className="border-input text-foreground hover:bg-input/10 inline-flex items-center justify-center rounded-md border px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200"
             >
               View demo

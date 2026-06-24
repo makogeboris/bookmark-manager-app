@@ -1,137 +1,19 @@
 import { Metadata } from "next";
-import BookmarkCard from "@/components/dashboard/BookmarkCard";
-import SortDropdown from "@/components/dashboard/SortDropdown";
-import PaginationComponent from "@/components/dashboard/Pagination";
-import DashboardSkeleton from "@/components/dashboard/Skeletons";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import BookmarkGrid from "@/components/dashboard/BookmarkGrid";
+import { DashboardProvider } from "@/lib/dashboard-context";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
 
-export default function page() {
+export default function DashboardPage() {
+  // For now renders empty — CRUD wiring comes next
   return (
-    <div className="flex flex-col gap-5 px-4 py-6 sm:p-8">
-      <div className="flex items-center justify-between">
-        <h1 className="xs:text-2xl text-foreground text-xl font-bold">
-          All bookmarks
-        </h1>
-
-        <SortDropdown />
-      </div>
-
-      <div className="flex flex-col gap-8">
-        <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(288px,1fr))] gap-8">
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-
-          <BookmarkCard
-            title="Frontend Mentor"
-            url="https://frontendmentor.io"
-            favicon="/favicons/frontendmentor.png"
-            description="Improve your front-end coding skills by building real projects. Solve real-world HTML, CSS and JavaScript challenges whilst working to professional designs."
-            tags={["Practice", "Learning", "Community"]}
-            views={47}
-            dateAdded="23 Sep"
-            dateVisited="15 Jan"
-            pinned={false}
-          />
-        </div>
-
-        <PaginationComponent />
-      </div>
-    </div>
+    <DashboardProvider>
+      <DashboardShell bookmarks={[]}>
+        <BookmarkGrid bookmarks={[]} />
+      </DashboardShell>
+    </DashboardProvider>
   );
 }
