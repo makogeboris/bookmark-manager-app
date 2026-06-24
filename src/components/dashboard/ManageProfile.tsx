@@ -24,6 +24,8 @@ import {
   changePasswordAction,
   deleteAccountAction,
 } from "@/lib/actions/auth";
+import PasswordInput from "../auth/PasswordInput";
+import { Spinner } from "../ui/spinner";
 
 // Schemas
 const profileSchema = z.object({
@@ -154,13 +156,28 @@ export default function ManageProfile({
 
   // Delete account
   async function handleDeleteAccount() {
-    const result = await deleteAccountAction();
-    if (result.success) {
-      onOpenChange(false);
-      router.push("/");
-      router.refresh();
+    try {
+      setIsDeleting(true);
+
+      const result = await deleteAccountAction();
+
+      if (result.success) {
+        onOpenChange(false);
+        router.push("/");
+        router.refresh();
+      }
+    } finally {
+      setIsDeleting(false);
     }
   }
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const authInProgress =
+    profileForm.formState.isSubmitting ||
+    emailForm.formState.isSubmitting ||
+    passwordForm.formState.isSubmitting ||
+    isDeleting;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -174,7 +191,7 @@ export default function ManageProfile({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent flex max-h-[70vh] flex-col gap-6 overflow-y-auto px-6 pb-6 pl-1">
+        <div className="scrollbar-thumb-sidebar-border flex max-h-[70vh] scrollbar-thin scrollbar-track-transparent flex-col gap-6 overflow-y-auto px-6 pb-6 pl-1">
           {/* Avatar */}
           <div className="flex items-center gap-4">
             <Avatar size="lg" className="size-14">
@@ -220,6 +237,7 @@ export default function ManageProfile({
               <Input
                 id="name"
                 className="h-11"
+                disabled={authInProgress}
                 {...profileForm.register("name")}
               />
               {profileForm.formState.errors.name && (
@@ -232,11 +250,18 @@ export default function ManageProfile({
             <Button
               type="submit"
               className="self-end"
-              disabled={profileForm.formState.isSubmitting}
+              disabled={authInProgress}
             >
-              {profileForm.formState.isSubmitting
-                ? "Saving..."
-                : "Save Changes"}
+              <span className="flex items-center gap-2">
+                {profileForm.formState.isSubmitting && (
+                  <Spinner data-icon="inline-start" />
+                )}
+                <span>
+                  {profileForm.formState.isSubmitting
+                    ? "Saving..."
+                    : "Save Changes"}
+                </span>
+              </span>
             </Button>
           </form>
 
@@ -274,6 +299,7 @@ export default function ManageProfile({
                 id="new-email"
                 type="email"
                 className="h-11"
+                disabled={authInProgress}
                 {...emailForm.register("newEmail")}
               />
               {emailForm.formState.errors.newEmail && (
@@ -286,11 +312,18 @@ export default function ManageProfile({
             <Button
               type="submit"
               className="self-end"
-              disabled={emailForm.formState.isSubmitting}
+              disabled={authInProgress}
             >
-              {emailForm.formState.isSubmitting
-                ? "Sending..."
-                : "Send Confirmation"}
+              <span className="flex items-center gap-2">
+                {emailForm.formState.isSubmitting && (
+                  <Spinner data-icon="inline-start" />
+                )}
+                <span>
+                  {emailForm.formState.isSubmitting
+                    ? "Sending..."
+                    : "Send Confirmation"}
+                </span>
+              </span>
             </Button>
           </form>
 
@@ -318,10 +351,10 @@ export default function ManageProfile({
               >
                 Current Password
               </Label>
-              <Input
+
+              <PasswordInput
                 id="current-password"
-                type="password"
-                className="h-11"
+                disabled={authInProgress}
                 {...passwordForm.register("currentPassword")}
               />
               {passwordForm.formState.errors.currentPassword && (
@@ -338,10 +371,10 @@ export default function ManageProfile({
               >
                 New Password
               </Label>
-              <Input
+
+              <PasswordInput
                 id="new-password"
-                type="password"
-                className="h-11"
+                disabled={authInProgress}
                 {...passwordForm.register("newPassword")}
               />
               {passwordForm.formState.errors.newPassword && (
@@ -358,10 +391,10 @@ export default function ManageProfile({
               >
                 Confirm New Password
               </Label>
-              <Input
+
+              <PasswordInput
                 id="confirm-password"
-                type="password"
-                className="h-11"
+                disabled={authInProgress}
                 {...passwordForm.register("confirmPassword")}
               />
               {passwordForm.formState.errors.confirmPassword && (
@@ -374,11 +407,18 @@ export default function ManageProfile({
             <Button
               type="submit"
               className="self-end"
-              disabled={passwordForm.formState.isSubmitting}
+              disabled={authInProgress}
             >
-              {passwordForm.formState.isSubmitting
-                ? "Updating..."
-                : "Update Password"}
+              <span className="flex items-center gap-2">
+                {passwordForm.formState.isSubmitting && (
+                  <Spinner data-icon="inline-start" />
+                )}
+                <span>
+                  {passwordForm.formState.isSubmitting
+                    ? "Updating..."
+                    : "Update Password"}
+                </span>
+              </span>
             </Button>
           </form>
 
@@ -397,6 +437,7 @@ export default function ManageProfile({
                 type="button"
                 variant="destructive"
                 className="self-start"
+                disabled={authInProgress}
                 onClick={() => setShowDeleteConfirm(true)}
               >
                 Delete Account
@@ -411,17 +452,25 @@ export default function ManageProfile({
                     type="button"
                     variant="outline"
                     size="sm"
+                    disabled={authInProgress}
                     onClick={() => setShowDeleteConfirm(false)}
                   >
                     Cancel
                   </Button>
+
                   <Button
                     type="button"
                     variant="destructive"
                     size="sm"
+                    disabled={authInProgress}
                     onClick={handleDeleteAccount}
                   >
-                    Yes, delete my account
+                    <span className="flex items-center gap-2">
+                      {isDeleting && <Spinner data-icon="inline-start" />}
+                      <span>
+                        {isDeleting ? "Deleting..." : "Yes, delete my account"}
+                      </span>
+                    </span>
                   </Button>
                 </div>
               </div>

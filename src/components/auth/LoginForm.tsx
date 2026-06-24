@@ -2,7 +2,7 @@
 
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ import PasswordInput from "./PasswordInput";
 import { signInSchema, type SignInSchema } from "@/lib/validations/auth";
 import { signInAction, resendVerificationAction } from "@/lib/actions/auth";
 import { authClient } from "@/lib/auth-client";
+import { Spinner } from "../ui/spinner";
 
 export function LoginForm({
   className,
@@ -41,6 +42,9 @@ export function LoginForm({
   const [unverified, setUnverified] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [resendStatus, setResendStatus] = useState<string | null>(null);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [isDemoPending, startDemoTransition] = useTransition();
 
   // 1. Type the form explicitly so inferred type is resolved
   const {
@@ -76,16 +80,38 @@ export function LoginForm({
   }
 
   async function handleResendVerification() {
-    const result = await resendVerificationAction(unverifiedEmail);
-    setResendStatus(result.message);
+    try {
+      setIsResending(true);
+
+      const result = await resendVerificationAction(unverifiedEmail);
+
+      setResendStatus(result.message);
+    } finally {
+      setIsResending(false);
+    }
   }
 
   async function handleGoogleSignIn() {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
+    try {
+      setIsGoogleLoading(true);
+
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }
+
+  function handleDemoLogin() {
+    startDemoTransition(() => {
+      router.push("/demo");
     });
   }
+
+  const authInProgress =
+    isSubmitting || isGoogleLoading || isResending || isDemoPending;
 
   return (
     <>
@@ -123,13 +149,23 @@ export function LoginForm({
                           {resendStatus}
                         </p>
                       ) : (
-                        <button
+                        <Button
                           type="button"
                           onClick={handleResendVerification}
-                          className="text-primary mt-1 underline underline-offset-4"
+                          disabled={authInProgress}
+                          className="text-primary mt-1 underline underline-offset-4 disabled:opacity-50"
                         >
-                          Resend verification email
-                        </button>
+                          <span className="flex items-center gap-2">
+                            {isResending && (
+                              <Spinner data-icon="inline-start" />
+                            )}
+                            <span>
+                              {isResending
+                                ? "Sending..."
+                                : "Resend verification email"}
+                            </span>
+                          </span>
+                        </Button>
                       )}
                     </div>
                   )}
@@ -141,6 +177,7 @@ export function LoginForm({
                       type="email"
                       placeholder="m@example.com"
                       {...register("email")}
+                      disabled={authInProgress}
                     />
                     {errors.email && (
                       <FieldError>{errors.email.message}</FieldError>
@@ -151,13 +188,22 @@ export function LoginForm({
                     <div className="flex items-center">
                       <FieldLabel htmlFor="password">Password</FieldLabel>
                       <Link
-                        href="/forgot-password"
-                        className="text-muted-foreground ml-auto inline-block text-xs underline-offset-4 hover:underline"
+                        href={authInProgress ? "#" : "/forgot-password"}
+                        aria-disabled={authInProgress}
+                        tabIndex={authInProgress ? -1 : undefined}
+                        className={cn(
+                          "text-muted-foreground ml-auto inline-block text-xs underline-offset-4 hover:underline",
+                          authInProgress && "pointer-events-none opacity-50",
+                        )}
                       >
                         Forgot your password?
                       </Link>
                     </div>
-                    <PasswordInput id="password" {...register("password")} />
+                    <PasswordInput
+                      id="password"
+                      {...register("password")}
+                      disabled={authInProgress}
+                    />
                     {errors.password && (
                       <FieldError>{errors.password.message}</FieldError>
                     )}
@@ -167,10 +213,13 @@ export function LoginForm({
                     <Button
                       size="lg"
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={authInProgress}
                       className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
                     >
-                      {isSubmitting ? "Logging in..." : "Login"}
+                      <span className="flex items-center gap-2">
+                        {isSubmitting && <Spinner data-icon="inline-start" />}
+                        <span>{isSubmitting ? "Logging in..." : "Login"}</span>
+                      </span>
                     </Button>
 
                     <Button
@@ -178,16 +227,36 @@ export function LoginForm({
                       variant="outline"
                       type="button"
                       onClick={handleGoogleSignIn}
+                      disabled={authInProgress}
                       className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
                     >
-                      Login with Google
+                      <span className="flex items-center gap-2">
+                        {isGoogleLoading && (
+                          <Spinner data-icon="inline-start" />
+                        )}
+                        <span>
+                          {isGoogleLoading
+                            ? "Redirecting..."
+                            : "Login with Google"}
+                        </span>
+                      </span>
                     </Button>
                   </Field>
 
                   <Field className="mt-2">
                     <FieldDescription className="flex items-center justify-center gap-1.5 text-center">
                       Don&apos;t have an account?{" "}
-                      <Link href="/signup">Sign up</Link>
+                      <Link
+                        href={authInProgress ? "#" : "/signup"}
+                        aria-disabled={authInProgress}
+                        tabIndex={authInProgress ? -1 : undefined}
+                        className={cn(
+                          "font-medium",
+                          authInProgress && "pointer-events-none opacity-50",
+                        )}
+                      >
+                        Sign up
+                      </Link>
                     </FieldDescription>
                   </Field>
 
@@ -197,10 +266,16 @@ export function LoginForm({
                     size="lg"
                     variant="demo"
                     type="button"
-                    onClick={() => router.push("/demo")}
+                    onClick={handleDemoLogin}
+                    disabled={authInProgress}
                     className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
                   >
-                    Try the demo
+                    <span className="flex items-center gap-2">
+                      {isDemoPending && <Spinner data-icon="inline-start" />}
+                      <span>
+                        {isDemoPending ? "Loading demo..." : "Try the demo"}
+                      </span>
+                    </span>
                   </Button>
                 </FieldGroup>
               </form>
