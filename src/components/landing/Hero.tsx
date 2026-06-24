@@ -1,11 +1,36 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
 
 export function HeroSection() {
   const [visible, setVisible] = useState(false);
+
+  const router = useRouter();
+  const [pendingRoute, setPendingRoute] = useState<"signup" | "demo" | null>(
+    null,
+  );
+
+  const [isPending, startTransition] = useTransition();
+
+  function handleSignup() {
+    setPendingRoute("signup");
+
+    startTransition(() => {
+      router.push("/signup");
+    });
+  }
+
+  function handleDemo() {
+    setPendingRoute("demo");
+
+    startTransition(() => {
+      router.push("/demo");
+    });
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 100);
@@ -57,19 +82,42 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/signup"
-              className="bg-primary text-primary-foreground hover:bg-primary/80 flex items-center justify-center rounded-md px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200"
+            <Button
+              size="xl"
+              type="button"
+              onClick={handleSignup}
+              disabled={isPending}
             >
-              Start for free
-              <ChevronRight />
-            </Link>
-            <Link
-              href="/demo"
-              className="border-input text-foreground hover:bg-input/10 inline-flex items-center justify-center rounded-md border px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200"
+              <span className="flex items-center gap-2">
+                {pendingRoute === "signup" && (
+                  <Spinner data-icon="inline-start" />
+                )}
+
+                <span>
+                  {pendingRoute === "signup" ? "Loading..." : "Start for free"}
+                </span>
+
+                {pendingRoute !== "signup" && <ChevronRight />}
+              </span>
+            </Button>
+
+            <Button
+              size="xl"
+              type="button"
+              variant="outline"
+              onClick={handleDemo}
+              disabled={isPending}
             >
-              View demo
-            </Link>
+              <span className="flex items-center gap-2">
+                {pendingRoute === "demo" && (
+                  <Spinner data-icon="inline-start" />
+                )}
+
+                <span>
+                  {pendingRoute === "demo" ? "Loading demo..." : "View demo"}
+                </span>
+              </span>
+            </Button>
           </div>
         </div>
       </div>

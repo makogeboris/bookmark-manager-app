@@ -7,7 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  // For now renders empty — CRUD wiring comes next
   return (
     <DashboardProvider>
       <BookmarkGrid bookmarks={[]} />

@@ -28,6 +28,7 @@ import {
   type ResetPasswordSchema,
 } from "@/lib/validations/auth";
 import { resetPasswordAction } from "@/lib/actions/auth";
+import { Spinner } from "../ui/spinner";
 
 export function ResetPasswordForm({
   className,
@@ -46,6 +47,8 @@ export function ResetPasswordForm({
   } = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
   });
+
+  const authInProgress = isSubmitting;
 
   async function onSubmit(values: ResetPasswordSchema) {
     setServerError(null);
@@ -117,7 +120,13 @@ export function ResetPasswordForm({
 
               <Field>
                 <FieldLabel htmlFor="password">New Password</FieldLabel>
-                <PasswordInput id="password" {...register("password")} />
+
+                <PasswordInput
+                  id="password"
+                  {...register("password")}
+                  disabled={authInProgress}
+                />
+
                 <FieldDescription className="text-xs">
                   Must be at least 8 characters long.
                 </FieldDescription>
@@ -130,9 +139,11 @@ export function ResetPasswordForm({
                 <FieldLabel htmlFor="confirmPassword">
                   Confirm Password
                 </FieldLabel>
+
                 <PasswordInput
                   id="confirmPassword"
                   {...register("confirmPassword")}
+                  disabled={authInProgress}
                 />
                 {errors.confirmPassword && (
                   <FieldError>{errors.confirmPassword.message}</FieldError>
@@ -143,16 +154,31 @@ export function ResetPasswordForm({
                 <Button
                   size="lg"
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={authInProgress}
                   className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
                 >
-                  {isSubmitting ? "Resetting..." : "Reset password"}
+                  <span className="flex items-center gap-2">
+                    {authInProgress && <Spinner data-icon="inline-start" />}
+                    <span>
+                      {authInProgress ? "Resetting..." : "Reset password"}
+                    </span>
+                  </span>
                 </Button>
               </Field>
 
               <Field className="mt-2">
                 <FieldDescription className="flex items-center justify-center gap-1.5 text-center">
-                  <Link href="/login">Back to login</Link>
+                  <Link
+                    href={authInProgress ? "#" : "/login"}
+                    aria-disabled={authInProgress}
+                    tabIndex={authInProgress ? -1 : undefined}
+                    className={cn(
+                      "font-medium",
+                      authInProgress && "pointer-events-none opacity-50",
+                    )}
+                  >
+                    Back to login
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

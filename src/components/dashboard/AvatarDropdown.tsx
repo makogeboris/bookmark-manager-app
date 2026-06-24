@@ -16,9 +16,11 @@ import { ThemeToggle } from "../shared/ThemeToggle ";
 import ManageProfile from "./ManageProfile";
 import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { Spinner } from "../ui/spinner";
 
 export default function AvatarDropdown() {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -33,16 +35,21 @@ export default function AvatarDropdown() {
     : "?";
 
   async function handleSignOut() {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login");
-          router.refresh();
-        },
-      },
-    });
-  }
+    try {
+      setIsSigningOut(true);
 
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/login");
+            router.refresh();
+          },
+        },
+      });
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
   return (
     <>
       <DropdownMenu>
@@ -98,14 +105,25 @@ export default function AvatarDropdown() {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
+            disabled={isSigningOut}
             onSelect={(e) => {
               e.preventDefault();
-              handleSignOut();
+
+              if (!isSigningOut) {
+                handleSignOut();
+              }
             }}
             className="text-muted-foreground cursor-pointer font-semibold"
           >
-            <LogOutIcon className="text-muted-foreground" />
-            Sign out
+            <span className="flex items-center gap-2">
+              {isSigningOut ? (
+                <Spinner data-icon="inline-start" />
+              ) : (
+                <LogOutIcon className="text-muted-foreground" />
+              )}
+
+              <span>{isSigningOut ? "Signing out..." : "Sign out"}</span>
+            </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

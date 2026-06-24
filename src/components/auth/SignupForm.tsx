@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +18,6 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Logo from "../shared/Logo";
@@ -27,11 +25,13 @@ import PasswordInput from "./PasswordInput";
 import { signUpSchema, type SignUpSchema } from "@/lib/validations/auth";
 import { signUpAction } from "@/lib/actions/auth";
 import { authClient } from "@/lib/auth-client";
+import { Spinner } from "@/components/ui/spinner";
+import clsx from "clsx";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const {
     register,
@@ -58,11 +58,19 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   }
 
   async function handleGoogleSignUp() {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-    });
+    try {
+      setIsGoogleLoading(true);
+
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/dashboard",
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   }
+
+  const authInProgress = isSubmitting || isGoogleLoading;
 
   if (success) {
     return (
@@ -113,6 +121,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 type="text"
                 placeholder="John Doe"
                 {...register("name")}
+                disabled={authInProgress}
               />
               {errors.name && <FieldError>{errors.name.message}</FieldError>}
             </Field>
@@ -124,13 +133,18 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 type="email"
                 placeholder="m@example.com"
                 {...register("email")}
+                disabled={authInProgress}
               />
               {errors.email && <FieldError>{errors.email.message}</FieldError>}
             </Field>
 
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <PasswordInput id="password" {...register("password")} />
+              <PasswordInput
+                id="password"
+                {...register("password")}
+                disabled={authInProgress}
+              />
               <FieldDescription className="text-xs">
                 Must be at least 8 characters long.
               </FieldDescription>
@@ -146,6 +160,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <PasswordInput
                 id="confirmPassword"
                 {...register("confirmPassword")}
+                disabled={authInProgress}
               />
               {errors.confirmPassword && (
                 <FieldError>{errors.confirmPassword.message}</FieldError>
@@ -156,10 +171,15 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <Button
                 size="lg"
                 type="submit"
-                disabled={isSubmitting}
+                disabled={authInProgress}
                 className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
               >
-                {isSubmitting ? "Creating account..." : "Create Account"}
+                <span className="flex items-center gap-2">
+                  {isSubmitting && <Spinner data-icon="inline-start" />}
+                  <span>
+                    {isSubmitting ? "Creating account..." : "Create Account"}
+                  </span>
+                </span>
               </Button>
 
               <Button
@@ -167,29 +187,34 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 variant="outline"
                 type="button"
                 onClick={handleGoogleSignUp}
+                disabled={authInProgress}
                 className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
               >
-                Sign up with Google
+                <span className="flex items-center gap-2">
+                  {isGoogleLoading && <Spinner data-icon="inline-start" />}
+                  <span>
+                    {isGoogleLoading ? "Redirecting..." : "Sign up with Google"}
+                  </span>
+                </span>
               </Button>
             </Field>
 
             <Field className="mt-2">
               <FieldDescription className="flex items-center justify-center gap-1.5 text-center">
-                Already have an account? <Link href="/login">Log in</Link>
+                Already have an account?{" "}
+                <Link
+                  href={authInProgress ? "#" : "/login"}
+                  aria-disabled={authInProgress}
+                  tabIndex={authInProgress ? -1 : undefined}
+                  className={clsx(
+                    "font-bold",
+                    authInProgress && "pointer-events-none opacity-50",
+                  )}
+                >
+                  Login
+                </Link>
               </FieldDescription>
             </Field>
-
-            <FieldSeparator className="my-2 sm:my-3" />
-
-            <Button
-              size="lg"
-              variant="demo"
-              type="button"
-              onClick={() => router.push("/demo")}
-              className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
-            >
-              Try the demo
-            </Button>
           </FieldGroup>
         </form>
       </CardContent>

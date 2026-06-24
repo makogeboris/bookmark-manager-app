@@ -27,6 +27,7 @@ import {
   type ForgotPasswordSchema,
 } from "@/lib/validations/auth";
 import { forgotPasswordAction } from "@/lib/actions/auth";
+import { Spinner } from "../ui/spinner";
 
 export function ForgotPasswordForm({
   className,
@@ -45,10 +46,10 @@ export function ForgotPasswordForm({
   async function onSubmit(values: ForgotPasswordSchema) {
     setServerMessage(null);
     const result = await forgotPasswordAction(values);
-    // Always show the message regardless of success/fail
-    // so we don't leak whether the email exists
     setServerMessage(result.message);
   }
+
+  const authInProgress = isSubmitting;
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -78,6 +79,7 @@ export function ForgotPasswordForm({
                   type="email"
                   placeholder="m@example.com"
                   {...register("email")}
+                  disabled={authInProgress}
                 />
                 {errors.email && (
                   <FieldError>{errors.email.message}</FieldError>
@@ -88,16 +90,31 @@ export function ForgotPasswordForm({
                 <Button
                   size="lg"
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={authInProgress}
                   className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
                 >
-                  {isSubmitting ? "Sending..." : "Send reset link"}
+                  <span className="flex items-center gap-2">
+                    {authInProgress && <Spinner data-icon="inline-start" />}
+                    <span>
+                      {authInProgress ? "Sending..." : "Send reset link"}
+                    </span>
+                  </span>
                 </Button>
               </Field>
 
               <Field className="mt-2">
                 <FieldDescription className="flex items-center justify-center gap-1.5 text-center">
-                  <Link href="/login">Back to login</Link>
+                  <Link
+                    href={authInProgress ? "#" : "/login"}
+                    aria-disabled={authInProgress}
+                    tabIndex={authInProgress ? -1 : undefined}
+                    className={cn(
+                      "font-medium",
+                      authInProgress && "pointer-events-none opacity-50",
+                    )}
+                  >
+                    Back to login
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
