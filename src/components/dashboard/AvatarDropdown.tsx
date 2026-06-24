@@ -13,11 +13,35 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "../shared/ThemeToggle ";
-import Link from "next/link";
 import ManageProfile from "./ManageProfile";
+import { signOut, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function AvatarDropdown() {
   const [profileOpen, setProfileOpen] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const user = session?.user;
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "?";
+
+  async function handleSignOut() {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+          router.refresh();
+        },
+      },
+    });
+  }
 
   return (
     <>
@@ -29,8 +53,8 @@ export default function AvatarDropdown() {
             className="[&:focus-visible>span]:ring-ring rounded-full focus-visible:outline-none [&:focus-visible>span]:rounded-full [&:focus-visible>span]:ring-2 [&:focus-visible>span]:ring-offset-2"
           >
             <Avatar size="lg">
-              <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-              <AvatarFallback>LR</AvatarFallback>
+              <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -44,16 +68,16 @@ export default function AvatarDropdown() {
             className="cursor-pointer"
           >
             <Avatar size="lg">
-              <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-              <AvatarFallback>LR</AvatarFallback>
+              <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
+              <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col">
               <p className="text-card-foreground text-sm font-semibold">
-                Emily Carter
+                {user?.name ?? "—"}
               </p>
               <p className="text-muted-foreground text-sm font-semibold">
-                emily101@gmail.com
+                {user?.email ?? "—"}
               </p>
             </div>
           </DropdownMenuItem>
@@ -74,11 +98,14 @@ export default function AvatarDropdown() {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem
-            onSelect={(e) => e.preventDefault()}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleSignOut();
+            }}
             className="text-muted-foreground cursor-pointer font-semibold"
           >
             <LogOutIcon className="text-muted-foreground" />
-            <Link href="/login">Sign Out</Link>
+            Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

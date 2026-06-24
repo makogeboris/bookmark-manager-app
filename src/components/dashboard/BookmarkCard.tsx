@@ -12,7 +12,7 @@ interface BookmarkCardProps {
   favicon?: string;
   description?: string;
   tags?: string[];
-  views?: number;
+  visitCount?: number;
   dateAdded?: string;
   dateVisited?: string;
   pinned?: boolean;
@@ -26,10 +26,10 @@ export default function BookmarkCard({
   favicon,
   description,
   tags = [],
-  views,
+  visitCount,
   dateAdded,
   dateVisited,
-  pinned = false,
+  pinned,
   onPinClick,
 }: BookmarkCardProps) {
   const displayUrl = url.replace(/^https?:\/\//, "");
@@ -42,12 +42,7 @@ export default function BookmarkCard({
             <div className="flex min-w-0 items-center gap-3">
               <div className="border-accent bg-background flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
                 {favicon ? (
-                  <Image
-                    width={44}
-                    height={44}
-                    src="/images/favicon-frontend-mentor.png"
-                    alt={title}
-                  />
+                  <Image width={44} height={44} src={favicon} alt={title} />
                 ) : (
                   <span className="text-muted-foreground text-xs font-bold">
                     {title.charAt(0).toUpperCase()}
@@ -93,10 +88,10 @@ export default function BookmarkCard({
 
         <CardFooter className="border-t-accent flex items-center justify-between border-t px-4 py-3">
           <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
-            {views !== undefined && (
+            {visitCount !== undefined && (
               <span className="flex items-center gap-1.5">
                 {Icons.eye}
-                {views}
+                {visitCount}
               </span>
             )}
 
@@ -115,16 +110,16 @@ export default function BookmarkCard({
             )}
           </div>
 
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={onPinClick}
-            className={`text-muted-foreground hover:text-foreground size-4 shrink-0 hover:bg-none ${
-              pinned ? "text-foreground" : ""
-            }`}
-          >
-            {Icons.pin}
-          </Button>
+          {pinned && (
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onPinClick}
+              className="text-foreground hover:text-foreground size-4 shrink-0 hover:bg-none"
+            >
+              {Icons.pin}
+            </Button>
+          )}
         </CardFooter>
       </CardContent>
     </Card>

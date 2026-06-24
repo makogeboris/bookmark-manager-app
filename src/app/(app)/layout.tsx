@@ -1,32 +1,22 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import { DashboardProvider } from "@/lib/dashboard-context";
 
-import { useState } from "react";
-import Header from "@/components/dashboard/Header";
-import Sidebar from "@/components/dashboard/Sidebar";
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getSession();
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  const handleTagToggle = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
-  };
+  if (!session) {
+    redirect("/login");
+  }
 
   return (
-    <div className="bg-background flex min-h-screen">
-      <Sidebar
-        open={sidebarOpen}
-        onOpenChange={setSidebarOpen}
-        selectedTags={selectedTags}
-        onTagToggle={handleTagToggle}
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1">{children}</main>
-      </div>
-    </div>
+    <DashboardProvider>
+      <DashboardShell>{children}</DashboardShell>
+    </DashboardProvider>
   );
 }

@@ -1,3 +1,16 @@
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return <main className="">{children}</main>;
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
+
+export default async function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getSession();
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
+  return <main>{children}</main>;
 }

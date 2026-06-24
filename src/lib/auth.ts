@@ -51,6 +51,27 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
+
+  user: {
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+        void sendEmail({
+          to: user.email,
+          subject: "Confirm your email change",
+          html: `
+            <p>Hi ${user.name},</p>
+            <p>Click the link below to confirm your new email address:</p>
+            <a href="${url}">${url}</a>
+            <p>If you didn't request this, ignore this email.</p>
+          `,
+        });
+      },
+    },
+    deleteUser: {
+      enabled: true,
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;

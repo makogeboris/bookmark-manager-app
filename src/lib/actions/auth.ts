@@ -157,3 +157,56 @@ export async function resendVerificationAction(email: string) {
     };
   }
 }
+
+// Update profile
+// ─── Update name only (email is a separate flow) ──────────────────────────────
+export async function updateProfileAction(values: { name: string }) {
+  try {
+    await auth.api.updateUser({
+      body: { name: values.name },
+      headers: await headers(),
+    });
+    return { success: true, message: "Profile updated." };
+  } catch (error) {
+    if (error instanceof APIError)
+      return { success: false, message: error.message };
+    return { success: false, message: "Something went wrong." };
+  }
+}
+
+// ─── Delete account ───────────────────────────────────────────────────────────
+export async function deleteAccountAction() {
+  try {
+    await auth.api.deleteUser({
+      body: {},
+      headers: await headers(),
+    });
+    return { success: true };
+  } catch (error) {
+    if (error instanceof APIError)
+      return { success: false, message: error.message };
+    return { success: false, message: "Something went wrong." };
+  }
+}
+
+// Change password
+export async function changePasswordAction(values: {
+  currentPassword: string;
+  newPassword: string;
+}) {
+  try {
+    await auth.api.changePassword({
+      body: {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+        revokeOtherSessions: true,
+      },
+      headers: await headers(),
+    });
+    return { success: true, message: "Password updated." };
+  } catch (error) {
+    if (error instanceof APIError)
+      return { success: false, message: error.message };
+    return { success: false, message: "Something went wrong." };
+  }
+}

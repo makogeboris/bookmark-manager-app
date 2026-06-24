@@ -1,6 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +19,35 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  updateProfileAction,
+  changePasswordAction,
+  deleteAccountAction,
+} from "@/lib/actions/auth";
+
+// Schemas
+const profileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+});
+
+const changeEmailSchema = z.object({
+  newEmail: z.string().email("Invalid email address"),
+});
+
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(8, "Must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+type ProfileSchema = z.infer<typeof profileSchema>;
+type ChangeEmailSchema = z.infer<typeof changeEmailSchema>;
+type PasswordSchema = z.infer<typeof passwordSchema>;
 
 interface ManageProfileProps {
   open: boolean;
@@ -23,27 +58,113 @@ export default function ManageProfile({
   open,
   onOpenChange,
 }: ManageProfileProps) {
-  const [name, setName] = useState("Emily Carter");
-  const [email, setEmail] = useState("emily101@gmail.com");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
+  const { data: session, refetch } = useSession();
+  const user = session?.user;
+
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const handleProfileSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
+  const [profileMessage, setProfileMessage] = useState<{
+    text: string;
+    ok: boolean;
+  } | null>(null);
+  const [emailMessage, setEmailMessage] = useState<{
+    text: string;
+    ok: boolean;
+  } | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<{
+    text: string;
+    ok: boolean;
+  } | null>(null);
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "?";
 
-  const handleDeleteAccount = () => {};
+  // Profile form
+  const profileForm = useForm<ProfileSchema>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { name: "" },
+  });
+
+  useEffect(() => {
+    if (user) {
+      profileForm.reset({ name: user.name });
+    }
+  }, [user?.name]);
+
+  async function onProfileSubmit(values: ProfileSchema) {
+    setProfileMessage(null);
+    const result = await updateProfileAction({ name: values.name });
+    setProfileMessage({
+      text: result.message ?? "Profile updated.",
+      ok: result.success,
+    });
+    if (result.success) refetch();
+  }
+
+  // Change email form
+  const emailForm = useForm<ChangeEmailSchema>({
+    resolver: zodResolver(changeEmailSchema),
+    defaultValues: { newEmail: "" },
+  });
+
+  async function onEmailSubmit(values: ChangeEmailSchema) {
+    setEmailMessage(null);
+    const { error } = await authClient.changeEmail({
+      newEmail: values.newEmail,
+      callbackURL: "/dashboard",
+    });
+    if (error) {
+      setEmailMessage({
+        text: error.message ?? "Something went wrong.",
+        ok: false,
+      });
+      return;
+    }
+    setEmailMessage({
+      text: "Confirmation email sent to your new address.",
+      ok: true,
+    });
+    emailForm.reset();
+  }
+
+  // Password form
+  const passwordForm = useForm<PasswordSchema>({
+    resolver: zodResolver(passwordSchema),
+  });
+
+  async function onPasswordSubmit(values: PasswordSchema) {
+    setPasswordMessage(null);
+    const result = await changePasswordAction({
+      currentPassword: values.currentPassword,
+      newPassword: values.newPassword,
+    });
+    setPasswordMessage({
+      text: result.message ?? "Password updated.",
+      ok: result.success,
+    });
+    if (result.success) passwordForm.reset();
+  }
+
+  // Delete account
+  async function handleDeleteAccount() {
+    const result = await deleteAccountAction();
+    if (result.success) {
+      onOpenChange(false);
+      router.push("/");
+      router.refresh();
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="gap-0 overflow-hidden p-6 sm:max-w-lg">
-        {/* Header */}
         <DialogHeader className="gap-1.5 pb-6">
           <DialogTitle className="text-foreground text-2xl font-bold">
             Manage Profile
@@ -57,25 +178,37 @@ export default function ManageProfile({
           {/* Avatar */}
           <div className="flex items-center gap-4">
             <Avatar size="lg" className="size-14">
-              <AvatarImage
-                src="https://github.com/shadcn.png"
-                alt="Emily Carter"
-              />
-              <AvatarFallback className="text-lg">EC</AvatarFallback>
+              <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
+              <AvatarFallback className="text-lg">{initials}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-foreground text-sm font-semibold">{name}</p>
-              <p className="text-muted-foreground text-xs">{email}</p>
+              <p className="text-foreground text-sm font-semibold">
+                {user?.name ?? "—"}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {user?.email ?? "—"}
+              </p>
             </div>
           </div>
 
           <Separator />
 
-          {/* Profile Info */}
-          <form onSubmit={handleProfileSubmit} className="flex flex-col gap-4">
+          {/* Name form */}
+          <form
+            onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+            className="flex flex-col gap-4"
+          >
             <p className="text-foreground text-lg font-bold">
               Personal Information
             </p>
+
+            {profileMessage && (
+              <p
+                className={`text-sm ${profileMessage.ok ? "text-green-600" : "text-destructive"}`}
+              >
+                {profileMessage.text}
+              </p>
+            )}
 
             <div className="flex flex-col gap-1.5">
               <Label
@@ -86,38 +219,97 @@ export default function ManageProfile({
               </Label>
               <Input
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
                 className="h-11"
+                {...profileForm.register("name")}
               />
+              {profileForm.formState.errors.name && (
+                <p className="text-destructive text-xs">
+                  {profileForm.formState.errors.name.message}
+                </p>
+              )}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label
-                htmlFor="email"
-                className="text-foreground text-sm font-semibold"
-              >
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-11"
-              />
-            </div>
-
-            <Button type="submit" className="self-end">
-              Save Changes
+            <Button
+              type="submit"
+              className="self-end"
+              disabled={profileForm.formState.isSubmitting}
+            >
+              {profileForm.formState.isSubmitting
+                ? "Saving..."
+                : "Save Changes"}
             </Button>
           </form>
 
           <Separator />
 
-          {/* Password */}
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
+          {/* Change email form */}
+          <form
+            onSubmit={emailForm.handleSubmit(onEmailSubmit)}
+            className="flex flex-col gap-4"
+          >
+            <p className="text-foreground text-lg font-bold">Change Email</p>
+            <p className="text-muted-foreground text-sm">
+              Current:{" "}
+              <span className="text-foreground font-medium">
+                {user?.email ?? "—"}
+              </span>
+            </p>
+
+            {emailMessage && (
+              <p
+                className={`text-sm ${emailMessage.ok ? "text-green-600" : "text-destructive"}`}
+              >
+                {emailMessage.text}
+              </p>
+            )}
+
+            <div className="flex flex-col gap-1.5">
+              <Label
+                htmlFor="new-email"
+                className="text-foreground text-sm font-semibold"
+              >
+                New Email Address
+              </Label>
+              <Input
+                id="new-email"
+                type="email"
+                className="h-11"
+                {...emailForm.register("newEmail")}
+              />
+              {emailForm.formState.errors.newEmail && (
+                <p className="text-destructive text-xs">
+                  {emailForm.formState.errors.newEmail.message}
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="self-end"
+              disabled={emailForm.formState.isSubmitting}
+            >
+              {emailForm.formState.isSubmitting
+                ? "Sending..."
+                : "Send Confirmation"}
+            </Button>
+          </form>
+
+          <Separator />
+
+          {/* Password form */}
+          <form
+            onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+            className="flex flex-col gap-4"
+          >
             <p className="text-foreground text-lg font-bold">Change Password</p>
+
+            {passwordMessage && (
+              <p
+                className={`text-sm ${passwordMessage.ok ? "text-green-600" : "text-destructive"}`}
+              >
+                {passwordMessage.text}
+              </p>
+            )}
 
             <div className="flex flex-col gap-1.5">
               <Label
@@ -129,10 +321,14 @@ export default function ManageProfile({
               <Input
                 id="current-password"
                 type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
                 className="h-11"
+                {...passwordForm.register("currentPassword")}
               />
+              {passwordForm.formState.errors.currentPassword && (
+                <p className="text-destructive text-xs">
+                  {passwordForm.formState.errors.currentPassword.message}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -145,10 +341,14 @@ export default function ManageProfile({
               <Input
                 id="new-password"
                 type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
                 className="h-11"
+                {...passwordForm.register("newPassword")}
               />
+              {passwordForm.formState.errors.newPassword && (
+                <p className="text-destructive text-xs">
+                  {passwordForm.formState.errors.newPassword.message}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -161,20 +361,30 @@ export default function ManageProfile({
               <Input
                 id="confirm-password"
                 type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="h-11"
+                {...passwordForm.register("confirmPassword")}
               />
+              {passwordForm.formState.errors.confirmPassword && (
+                <p className="text-destructive text-xs">
+                  {passwordForm.formState.errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
-            <Button type="submit" className="self-end">
-              Update Password
+            <Button
+              type="submit"
+              className="self-end"
+              disabled={passwordForm.formState.isSubmitting}
+            >
+              {passwordForm.formState.isSubmitting
+                ? "Updating..."
+                : "Update Password"}
             </Button>
           </form>
 
           <Separator />
 
-          {/* Delete Account */}
+          {/* Danger zone */}
           <div className="flex flex-col gap-3">
             <p className="text-foreground text-lg font-bold">Danger Zone</p>
             <p className="text-muted-foreground text-sm">
