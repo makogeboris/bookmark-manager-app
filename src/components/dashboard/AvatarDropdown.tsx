@@ -60,7 +60,10 @@ export default function AvatarDropdown() {
             className="[&:focus-visible>span]:ring-ring rounded-full focus-visible:outline-none [&:focus-visible>span]:rounded-full [&:focus-visible>span]:ring-2 [&:focus-visible>span]:ring-offset-2"
           >
             <Avatar size="lg">
-              <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
+              <AvatarImage
+                src={user?.image ?? "/images/image-avatar.webp"}
+                alt={user?.name ?? ""}
+              />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </Button>
@@ -75,16 +78,19 @@ export default function AvatarDropdown() {
             className="cursor-pointer"
           >
             <Avatar size="lg">
-              <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
+              <AvatarImage
+                src={user?.image ?? "/images/image-avatar.webp"}
+                alt={user?.name ?? ""}
+              />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col">
               <p className="text-card-foreground text-sm font-semibold">
-                {user?.name ?? "—"}
+                {user?.name ?? "Emily Carter"}
               </p>
               <p className="text-muted-foreground text-sm font-semibold">
-                {user?.email ?? "—"}
+                {user?.email ?? "emily101@email.com"}
               </p>
             </div>
           </DropdownMenuItem>

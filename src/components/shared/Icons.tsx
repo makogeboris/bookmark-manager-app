@@ -119,16 +119,16 @@ export const Icons = {
   ),
   check: (
     <svg
-      width="13"
-      height="9"
-      viewBox="0 0 13 9"
+      width="15"
+      height="11"
+      viewBox="0 0 15 11"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M11.4167 0.75L4.08333 8.08333L0.75 4.75"
+        d="M14.1334 0.799805L4.96672 9.96647L0.800049 5.7998"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

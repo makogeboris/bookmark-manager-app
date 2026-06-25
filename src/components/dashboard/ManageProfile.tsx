@@ -26,6 +26,7 @@ import {
 } from "@/lib/actions/auth";
 import PasswordInput from "../auth/PasswordInput";
 import { Spinner } from "../ui/spinner";
+import { toast } from "sonner";
 
 // Schemas
 const profileSchema = z.object({
@@ -61,23 +62,11 @@ export default function ManageProfile({
   onOpenChange,
 }: ManageProfileProps) {
   const router = useRouter();
-  const { data: session, refetch } = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const [profileMessage, setProfileMessage] = useState<{
-    text: string;
-    ok: boolean;
-  } | null>(null);
-  const [emailMessage, setEmailMessage] = useState<{
-    text: string;
-    ok: boolean;
-  } | null>(null);
-  const [passwordMessage, setPasswordMessage] = useState<{
-    text: string;
-    ok: boolean;
-  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const initials = user?.name
     ? user.name
@@ -101,13 +90,14 @@ export default function ManageProfile({
   }, [user?.name]);
 
   async function onProfileSubmit(values: ProfileSchema) {
-    setProfileMessage(null);
-    const result = await updateProfileAction({ name: values.name });
-    setProfileMessage({
-      text: result.message ?? "Profile updated.",
-      ok: result.success,
-    });
-    if (result.success) refetch();
+    const result = await updateProfileAction(values);
+
+    if (result.success) {
+      toast.success("Name updated successfully.");
+      return;
+    }
+
+    toast.error(result.message);
   }
 
   // Change email form
@@ -117,22 +107,18 @@ export default function ManageProfile({
   });
 
   async function onEmailSubmit(values: ChangeEmailSchema) {
-    setEmailMessage(null);
     const { error } = await authClient.changeEmail({
       newEmail: values.newEmail,
       callbackURL: "/dashboard",
     });
+
     if (error) {
-      setEmailMessage({
-        text: error.message ?? "Something went wrong.",
-        ok: false,
-      });
+      toast.error(error.message ?? "Something went wrong.");
       return;
     }
-    setEmailMessage({
-      text: "Confirmation email sent to your new address.",
-      ok: true,
-    });
+
+    toast.success("Confirmation email sent to your new address.");
+
     emailForm.reset();
   }
 
@@ -142,16 +128,19 @@ export default function ManageProfile({
   });
 
   async function onPasswordSubmit(values: PasswordSchema) {
-    setPasswordMessage(null);
     const result = await changePasswordAction({
       currentPassword: values.currentPassword,
       newPassword: values.newPassword,
     });
-    setPasswordMessage({
-      text: result.message ?? "Password updated.",
-      ok: result.success,
-    });
-    if (result.success) passwordForm.reset();
+
+    if (result.success) {
+      toast.success(result.message ?? "Password updated.");
+
+      passwordForm.reset();
+      return;
+    }
+
+    toast.error(result.message ?? "Unable to update password.");
   }
 
   // Delete account
@@ -162,16 +151,19 @@ export default function ManageProfile({
       const result = await deleteAccountAction();
 
       if (result.success) {
+        toast.success("Account deleted.");
+
         onOpenChange(false);
         router.push("/");
         router.refresh();
+        return;
       }
+
+      toast.error(result.message ?? "Failed to delete account.");
     } finally {
       setIsDeleting(false);
     }
   }
-
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const authInProgress =
     profileForm.formState.isSubmitting ||
@@ -195,15 +187,18 @@ export default function ManageProfile({
           {/* Avatar */}
           <div className="flex items-center gap-4">
             <Avatar size="lg" className="size-14">
-              <AvatarImage src={user?.image ?? ""} alt={user?.name ?? ""} />
+              <AvatarImage
+                src={user?.image ?? "/images/image-avatar.webp"}
+                alt={user?.name ?? ""}
+              />
               <AvatarFallback className="text-lg">{initials}</AvatarFallback>
             </Avatar>
             <div>
               <p className="text-foreground text-sm font-semibold">
-                {user?.name ?? "—"}
+                {user?.name ?? "Emily Carter"}
               </p>
               <p className="text-muted-foreground text-xs">
-                {user?.email ?? "—"}
+                {user?.email ?? "emily101@email.com"}
               </p>
             </div>
           </div>
@@ -219,14 +214,6 @@ export default function ManageProfile({
               Personal Information
             </p>
 
-            {profileMessage && (
-              <p
-                className={`text-sm ${profileMessage.ok ? "text-green-600" : "text-destructive"}`}
-              >
-                {profileMessage.text}
-              </p>
-            )}
-
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="name"
@@ -234,6 +221,7 @@ export default function ManageProfile({
               >
                 Full Name
               </Label>
+
               <Input
                 id="name"
                 className="h-11"
@@ -276,17 +264,9 @@ export default function ManageProfile({
             <p className="text-muted-foreground text-sm">
               Current:{" "}
               <span className="text-foreground font-medium">
-                {user?.email ?? "—"}
+                {user?.email ?? "emily101@email.com"}
               </span>
             </p>
-
-            {emailMessage && (
-              <p
-                className={`text-sm ${emailMessage.ok ? "text-green-600" : "text-destructive"}`}
-              >
-                {emailMessage.text}
-              </p>
-            )}
 
             <div className="flex flex-col gap-1.5">
               <Label
@@ -335,14 +315,6 @@ export default function ManageProfile({
             className="flex flex-col gap-4"
           >
             <p className="text-foreground text-lg font-bold">Change Password</p>
-
-            {passwordMessage && (
-              <p
-                className={`text-sm ${passwordMessage.ok ? "text-green-600" : "text-destructive"}`}
-              >
-                {passwordMessage.text}
-              </p>
-            )}
 
             <div className="flex flex-col gap-1.5">
               <Label
@@ -481,3 +453,11 @@ export default function ManageProfile({
     </Dialog>
   );
 }
+
+// toast("Link copied!", {
+//   icon: Icons.copyIcon,
+// });
+
+// toast.success("Link copied!", {
+//   icon: Icons.copyIcon,
+// });
