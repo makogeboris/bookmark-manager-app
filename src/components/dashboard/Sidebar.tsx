@@ -68,7 +68,13 @@ export default function Sidebar({
           }`}
         >
           {Icons.home}
-          <span>Home</span>
+          <div className="flex w-full items-center justify-between">
+            <span>Home</span>
+
+            <span className="border-sidebar-border bg-sidebar-accent flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+              {12}
+            </span>
+          </div>
         </Button>
 
         <Button
@@ -85,7 +91,13 @@ export default function Sidebar({
           }`}
         >
           {Icons.archive}
-          <span>Archived</span>
+          <div className="flex w-full items-center justify-between">
+            <span>Archived</span>
+
+            <span className="border-sidebar-border bg-sidebar-accent flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+              {3}
+            </span>
+          </div>
         </Button>
       </nav>
 
@@ -107,7 +119,7 @@ export default function Sidebar({
           )}
         </div>
 
-        <ul className="scrollbar-thin scrollbar-thumb-sidebar-border scrollbar-track-transparent flex-1 space-y-px overflow-y-auto pr-0.5 pb-12">
+        <ul className="scrollbar-thumb-sidebar-border flex-1 scrollbar-thin scrollbar-track-transparent space-y-px overflow-y-auto pr-0.5 pb-12">
           {tags.map((tag) => {
             const checked = selectedTags.includes(tag.name);
             return (
