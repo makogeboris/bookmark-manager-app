@@ -7,6 +7,12 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL ?? `https://${process.env.VERCEL_URL}`,
   secret: process.env.BETTER_AUTH_SECRET!,
 
+  trustedOrigins: [
+    "https://bookmark-manager-ignite.vercel.app",
+    "http://localhost:3000",
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+  ],
+
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -55,7 +61,7 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
-      sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+      sendChangeEmailConfirmation: async ({ user, url }) => {
         void sendEmail({
           to: user.email,
           subject: "Confirm your email change",
@@ -70,6 +76,19 @@ export const auth = betterAuth({
     },
     deleteUser: {
       enabled: true,
+    },
+  },
+
+  advanced: {
+    useSecureCookies: true,
+    cookies: {
+      session_token: {
+        attributes: {
+          sameSite: "lax",
+          secure: true,
+          httpOnly: true,
+        },
+      },
     },
   },
 });
