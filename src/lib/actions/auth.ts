@@ -159,7 +159,6 @@ export async function resendVerificationAction(email: string) {
 }
 
 // Update profile
-// ─── Update name only (email is a separate flow) ──────────────────────────────
 export async function updateProfileAction(values: { name: string }) {
   try {
     await auth.api.updateUser({
@@ -174,7 +173,7 @@ export async function updateProfileAction(values: { name: string }) {
   }
 }
 
-// ─── Delete account ───────────────────────────────────────────────────────────
+// Delete account
 export async function deleteAccountAction() {
   try {
     await auth.api.deleteUser({
