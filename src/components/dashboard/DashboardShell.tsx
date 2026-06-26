@@ -18,16 +18,26 @@ export default function DashboardShell({
   isDemo = false,
 }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const { selectedTags, toggleTag, clearTags, showArchived, setShowArchived } =
     useDashboard();
 
-  const tagCounts = bookmarks
-    .filter((b) => !b.isArchived)
-    .flatMap((b) => b.tags)
-    .reduce<Record<string, number>>((acc, tag) => {
-      acc[tag] = (acc[tag] ?? 0) + 1;
-      return acc;
-    }, {});
+  const tagCounts: Record<string, number> = {};
+  let homeCount = 0;
+  let archivedCount = 0;
+
+  bookmarks.forEach((bookmark) => {
+    if (bookmark.isArchived) {
+      archivedCount++;
+      return;
+    }
+
+    homeCount++;
+
+    bookmark.tags.forEach((tag) => {
+      tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
+    });
+  });
 
   const tags = Object.entries(tagCounts)
     .map(([name, count]) => ({ name, count }))
@@ -47,6 +57,8 @@ export default function DashboardShell({
         onTagToggle={toggleTag}
         onClearTags={clearTags}
         tags={tags}
+        homeCount={homeCount}
+        archivedCount={archivedCount}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">

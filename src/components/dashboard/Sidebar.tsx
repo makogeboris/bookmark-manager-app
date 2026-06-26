@@ -20,6 +20,8 @@ interface SidebarProps {
   onTagToggle?: (tag: string) => void;
   onClearTags?: () => void;
   tags?: Tag[];
+  homeCount?: number;
+  archivedCount?: number;
 }
 
 export default function Sidebar({
@@ -31,6 +33,8 @@ export default function Sidebar({
   onTagToggle,
   onClearTags,
   tags = [],
+  homeCount = 0,
+  archivedCount = 0,
 }: SidebarProps) {
   const close = () => onOpenChange?.(false);
 
@@ -71,9 +75,11 @@ export default function Sidebar({
           <div className="flex w-full items-center justify-between">
             <span>Home</span>
 
-            <span className="border-sidebar-border bg-sidebar-accent flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
-              {12}
-            </span>
+            {homeCount > 0 && (
+              <span className="border-sidebar-border bg-sidebar-accent flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+                {homeCount}
+              </span>
+            )}
           </div>
         </Button>
 
@@ -94,9 +100,11 @@ export default function Sidebar({
           <div className="flex w-full items-center justify-between">
             <span>Archived</span>
 
-            <span className="border-sidebar-border bg-sidebar-accent flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
-              {3}
-            </span>
+            {archivedCount > 0 && (
+              <span className="border-sidebar-border bg-sidebar-accent flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+                {archivedCount}
+              </span>
+            )}
           </div>
         </Button>
       </nav>
@@ -120,23 +128,29 @@ export default function Sidebar({
         </div>
 
         <ul className="scrollbar-thumb-sidebar-border flex-1 scrollbar-thin scrollbar-track-transparent space-y-px overflow-y-auto pr-0.5 pb-12">
-          {tags.map((tag) => {
-            const checked = selectedTags.includes(tag.name);
-            return (
-              <li key={tag.name} className="w-full">
-                <label className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground group flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base font-semibold transition-colors duration-150">
-                  <Checkbox
-                    checked={checked}
-                    onCheckedChange={() => onTagToggle?.(tag.name)}
-                  />
-                  <span className="flex-1">{tag.name}</span>
-                  <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
-                    {tag.count}
-                  </span>
-                </label>
-              </li>
-            );
-          })}
+          {tags.length === 0 ? (
+            <li className="text-muted-foreground px-3 py-4 text-sm">
+              No tags yet. Add tags to your bookmarks to see them here.
+            </li>
+          ) : (
+            tags.map((tag) => {
+              const checked = selectedTags.includes(tag.name);
+              return (
+                <li key={tag.name} className="w-full">
+                  <label className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground group flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base font-semibold transition-colors duration-150">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => onTagToggle?.(tag.name)}
+                    />
+                    <span className="flex-1">{tag.name}</span>
+                    <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+                      {tag.count}
+                    </span>
+                  </label>
+                </li>
+              );
+            })
+          )}
         </ul>
       </div>
     </>
