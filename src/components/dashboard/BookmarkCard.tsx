@@ -36,7 +36,7 @@ export default function BookmarkCard({
 
   return (
     <Card className="bg-card card-shadow rounded-10 border-transparent pb-0 shadow-none">
-      <CardContent className="flex flex-col gap-4 px-0">
+      <CardContent className="flex min-h-full flex-col justify-between gap-4 px-0">
         <div className="flex flex-col gap-4 px-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
