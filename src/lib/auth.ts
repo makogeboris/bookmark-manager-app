@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { nextCookies } from "better-auth/next-js";
 import { prisma } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
 
@@ -17,36 +18,40 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
+  plugins: [nextCookies()],
+
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      void sendEmail({
+      await sendEmail({
         to: user.email,
         subject: "Reset your Bookmark Manager password",
         html: `
-      <p>Hi ${user.name},</p>
-      <p>Click the link below to reset your password:</p>
-      <a href="${url}">${url}</a>
-      <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
-    `,
+          <p>Hi ${user.name},</p>
+          <p>Click the link below to reset your password:</p>
+          <a href="${url}">${url}</a>
+          <p>This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+        `,
       });
     },
   },
 
   emailVerification: {
     sendOnSignUp: true,
+    sendOnSignIn: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      void sendEmail({
+      await sendEmail({
         to: user.email,
         subject: "Verify your Bookmark Manager account",
         html: `
-      <p>Hi ${user.name},</p>
-      <p>Click the link below to verify your email address:</p>
-      <a href="${url}">${url}</a>
-      <p>This link expires in 24 hours.</p>
-    `,
+          <p>Hi ${user.name},</p>
+          <p>Click the link below to verify your email address:</p>
+          <a href="${url}">${url}</a>
+          <p>After verifying, you can log in from any device.</p>
+          <p>This link expires in 24 hours.</p>
+        `,
       });
     },
   },
@@ -62,7 +67,7 @@ export const auth = betterAuth({
     changeEmail: {
       enabled: true,
       sendChangeEmailConfirmation: async ({ user, url }) => {
-        void sendEmail({
+        await sendEmail({
           to: user.email,
           subject: "Confirm your email change",
           html: `
