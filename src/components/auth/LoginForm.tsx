@@ -46,7 +46,6 @@ export function LoginForm({
   const [isResending, setIsResending] = useState(false);
   const [isDemoPending, startDemoTransition] = useTransition();
 
-  // 1. Type the form explicitly so inferred type is resolved
   const {
     register,
     handleSubmit,
