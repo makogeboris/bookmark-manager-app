@@ -19,10 +19,16 @@ export async function sendEmail({
   subject: string;
   html: string;
 }) {
-  await transporter.sendMail({
-    from: `"Bookmark Manager" <${process.env.BREVO_USER}>`,
-    to,
-    subject,
-    html,
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"Bookmark Manager" <${process.env.BREVO_USER}>`,
+      to,
+      subject,
+      html,
+    });
+    console.log("Email sent:", info.messageId);
+  } catch (error) {
+    console.error("Email send error:", error);
+    throw error;
+  }
 }
