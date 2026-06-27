@@ -21,7 +21,7 @@ export async function sendEmail({
 }) {
   try {
     const info = await transporter.sendMail({
-      from: `"Bookmark Manager" <${process.env.BREVO_USER}>`,
+      from: `"Bookmark Manager" <${process.env.BREVO_FROM_EMAIL}>`,
       to,
       subject,
       html,
