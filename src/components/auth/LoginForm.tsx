@@ -29,6 +29,7 @@ import { signInSchema, type SignInSchema } from "@/lib/validations/auth";
 import { signInAction, resendVerificationAction } from "@/lib/actions/auth";
 import { authClient } from "@/lib/auth-client";
 import { Spinner } from "../ui/spinner";
+import { Icons } from "../shared/Icons";
 
 export function LoginForm({
   className,
@@ -233,10 +234,11 @@ export function LoginForm({
                         {isGoogleLoading && (
                           <Spinner data-icon="inline-start" />
                         )}
-                        <span>
+                        <span className="flex items-center gap-2">
+                          {Icons.google}
                           {isGoogleLoading
                             ? "Redirecting..."
-                            : "Login with Google"}
+                            : "Continue with Google"}
                         </span>
                       </span>
                     </Button>

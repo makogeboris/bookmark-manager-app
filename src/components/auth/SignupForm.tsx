@@ -27,6 +27,7 @@ import { signUpAction } from "@/lib/actions/auth";
 import { authClient } from "@/lib/auth-client";
 import { Spinner } from "@/components/ui/spinner";
 import clsx from "clsx";
+import { Icons } from "../shared/Icons";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -192,8 +193,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               >
                 <span className="flex items-center gap-2">
                   {isGoogleLoading && <Spinner data-icon="inline-start" />}
-                  <span>
-                    {isGoogleLoading ? "Redirecting..." : "Sign up with Google"}
+                  <span className="flex items-center gap-2">
+                    {Icons.google}
+                    {isGoogleLoading
+                      ? "Redirecting..."
+                      : "Continue with Google"}
                   </span>
                 </span>
               </Button>
