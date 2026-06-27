@@ -115,7 +115,7 @@ export function LoginForm({
   return (
     <>
       {resetSuccess && (
-        <p className="text-sm text-green-600">
+        <p className="text-sm text-green-700">
           Password reset successfully. Please log in.
         </p>
       )}
