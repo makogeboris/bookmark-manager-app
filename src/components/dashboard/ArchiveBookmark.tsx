@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,11 +13,34 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { DropdownMenuItem } from "../ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Icons } from "../shared/Icons";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
+import { archiveBookmarkAction } from "@/lib/actions/bookmarks";
+import { toast } from "sonner";
 
-export default function ArchiveBookmark() {
+interface ArchiveProps {
+  bookmarkId: string;
+}
+
+export function ArchiveBookmark({ bookmarkId }: ArchiveProps) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleArchive() {
+    setLoading(true);
+    const result = await archiveBookmarkAction(bookmarkId);
+    setLoading(false);
+
+    if (!result.success) {
+      toast.error(result.message ?? "Failed to archive bookmark.");
+      return;
+    }
+
+    toast.success("Bookmark archived.", { icon: Icons.archive });
+    router.refresh();
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -32,13 +57,19 @@ export default function ArchiveBookmark() {
         <AlertDialogHeader>
           <AlertDialogTitle>Archive bookmark</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to archive this bookmark?
+            This bookmark will be moved to your archive. You can restore it
+            anytime.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Archive</AlertDialogAction>
+          <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleArchive} disabled={loading}>
+            <span className="flex items-center gap-2">
+              {loading && <Spinner data-icon="inline-start" />}
+              <span>{loading ? "Archiving..." : "Archive"}</span>
+            </span>
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

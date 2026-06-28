@@ -173,7 +173,10 @@ export default function ManageProfile({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 overflow-hidden p-6 sm:max-w-lg">
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="gap-0 overflow-hidden p-6 sm:max-w-lg"
+      >
         <DialogHeader className="gap-1.5 pb-6">
           <DialogTitle className="text-foreground text-2xl font-bold">
             Manage Profile

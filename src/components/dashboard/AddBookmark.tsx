@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,22 +18,115 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Icons } from "../shared/Icons";
 import AutoGenerate from "./AutoGenerate";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  bookmarkSchema,
+  type BookmarkSchema,
+} from "@/lib/validations/bookmarks";
+import { addBookmarkAction } from "@/lib/actions/bookmarks";
+import { toast } from "sonner";
 
 const MAX_DESCRIPTION = 280;
 
-export default function AddBookmark() {
-  const [description, setDescription] = useState("");
+interface AddBookmarkProps {
+  isDemo?: boolean;
+}
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // handle submit
-  };
+export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [favicon, setFavicon] = useState("");
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<BookmarkSchema>({
+    resolver: zodResolver(bookmarkSchema),
+    defaultValues: { title: "", description: "", url: "", tags: "" },
+  });
+
+  const description = watch("description") ?? "";
+
+  // Called by AutoGenerate when metadata is fetched
+  function handleGenerated(data: {
+    title: string;
+    description: string;
+    url: string;
+    favicon: string;
+  }) {
+    setValue("title", data.title, { shouldValidate: true });
+    setValue("description", data.description, { shouldValidate: true });
+    setValue("url", data.url, { shouldValidate: true });
+    setFavicon(data.favicon);
+  }
+
+  async function onSubmit(values: BookmarkSchema) {
+    const result = await addBookmarkAction({
+      ...values,
+      tags: values.tags ?? "",
+      favicon,
+    });
+
+    if (!result.success) {
+      toast.error(result.message ?? "Failed to add bookmark.");
+      return;
+    }
+
+    toast.success("Bookmark added successfully.", { icon: Icons.check });
+    reset();
+    setFavicon("");
+    setOpen(false);
+    router.refresh();
+  }
+
+  // Demo users see a disabled button with a tooltip
+  if (isDemo) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="flex">
+              <Button
+                type="button"
+                size="icon-lg"
+                disabled
+                className="md:hidden"
+              >
+                {Icons.plus}
+              </Button>
+              <Button
+                type="button"
+                size="xxl"
+                disabled
+                className="hidden md:flex"
+              >
+                {Icons.plus}
+                <span>Add Bookmark</span>
+              </Button>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Adding bookmarks is disabled in demo mode</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div className="flex">
           <Button type="button" size="icon-lg" className="md:hidden">
@@ -49,73 +145,98 @@ export default function AddBookmark() {
             <DialogTitle className="text-foreground text-2xl font-bold">
               Add a Bookmark
             </DialogTitle>
-
-            <AutoGenerate />
+            <AutoGenerate onGenerated={handleGenerated} />
           </div>
           <DialogDescription className="text-muted-foreground text-sm font-medium">
             Save a link with details to keep your collection organized.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 md:gap-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-6 md:gap-8"
+        >
           <div className="flex flex-col gap-4 md:gap-5">
             {/* Title */}
             <div className="flex flex-col gap-1.5">
               <Label
-                htmlFor="title"
+                htmlFor="add-title"
                 className="text-foreground gap-0.5 text-sm font-semibold"
               >
                 Title <span className="text-ring">*</span>
               </Label>
-              <Input id="title" name="title" required className="h-11" />
+              <Input
+                id="add-title"
+                disabled={isSubmitting}
+                className="h-11"
+                {...register("title")}
+              />
+              {errors.title && (
+                <p className="text-destructive text-xs">
+                  {errors.title.message}
+                </p>
+              )}
             </div>
 
             {/* Description */}
             <div className="flex flex-col gap-1.5">
               <Label
-                htmlFor="description"
+                htmlFor="add-description"
                 className="text-foreground gap-0.5 text-sm font-semibold"
               >
                 Description <span className="text-ring">*</span>
               </Label>
               <Textarea
-                id="description"
-                name="description"
-                required
+                id="add-description"
+                disabled={isSubmitting}
                 maxLength={MAX_DESCRIPTION}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
                 className="min-h-23 resize-none"
+                {...register("description")}
               />
               <p className="text-muted-foreground text-right text-xs">
                 {description.length}/{MAX_DESCRIPTION}
               </p>
+              {errors.description && (
+                <p className="text-destructive text-xs">
+                  {errors.description.message}
+                </p>
+              )}
             </div>
 
-            {/* Website URL */}
+            {/* URL */}
             <div className="flex flex-col gap-1.5">
               <Label
-                htmlFor="url"
+                htmlFor="add-url"
                 className="text-foreground gap-0.5 text-sm font-semibold"
               >
                 Website URL <span className="text-ring">*</span>
               </Label>
-              <Input id="url" name="url" type="url" required className="h-11" />
+              <Input
+                id="add-url"
+                type="url"
+                disabled={isSubmitting}
+                className="h-11"
+                {...register("url")}
+              />
+              {errors.url && (
+                <p className="text-destructive text-xs">{errors.url.message}</p>
+              )}
             </div>
 
             {/* Tags */}
             <div className="flex flex-col gap-1.5">
               <Label
-                htmlFor="tags"
+                htmlFor="add-tags"
                 className="text-foreground gap-0.5 text-sm font-semibold"
               >
-                Tags <span className="text-ring">*</span>
+                Tags
               </Label>
               <Input
-                id="tags"
-                name="tags"
+                id="add-tags"
                 placeholder="e.g. design, learning, tools"
+                disabled={isSubmitting}
                 className="h-11"
+                {...register("tags")}
               />
             </div>
           </div>
@@ -126,6 +247,7 @@ export default function AddBookmark() {
                 size="lg"
                 type="button"
                 variant="outline"
+                disabled={isSubmitting}
                 className="border-input bg-transparent px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
               >
                 Cancel
@@ -134,9 +256,13 @@ export default function AddBookmark() {
             <Button
               size="lg"
               type="submit"
+              disabled={isSubmitting}
               className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
             >
-              Add Bookmark
+              <span className="flex items-center gap-2">
+                {isSubmitting && <Spinner data-icon="inline-start" />}
+                <span>{isSubmitting ? "Adding..." : "Add Bookmark"}</span>
+              </span>
             </Button>
           </DialogFooter>
         </form>

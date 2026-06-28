@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,20 +13,50 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { DropdownMenuItem } from "../ui/dropdown-menu";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Icons } from "../shared/Icons";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
+import { deleteBookmarkAction } from "@/lib/actions/bookmarks";
+import { toast } from "sonner";
 
-export default function DeleteBookmark() {
+interface DeleteProps {
+  bookmarkId: string;
+  isDemo?: boolean;
+}
+
+export function DeleteBookmark({ bookmarkId, isDemo = false }: DeleteProps) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleDelete() {
+    if (isDemo) {
+      toast.error("Deleting is disabled in demo mode.");
+      return;
+    }
+
+    setLoading(true);
+    const result = await deleteBookmarkAction(bookmarkId);
+    setLoading(false);
+
+    if (!result.success) {
+      toast.error(result.message ?? "Failed to delete bookmark.");
+      return;
+    }
+
+    toast.success("Bookmark deleted.", { icon: Icons.delete });
+    router.refresh();
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
-          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
+          disabled={isDemo}
+          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold disabled:opacity-50"
         >
           {Icons.delete}
-          Delete
+          Delete Permanently
         </DropdownMenuItem>
       </AlertDialogTrigger>
 
@@ -32,14 +64,22 @@ export default function DeleteBookmark() {
         <AlertDialogHeader>
           <AlertDialogTitle>Delete bookmark</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this bookmark?
+            Are you sure? This bookmark will be permanently deleted and cannot
+            be recovered.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive">
-            Delete permanently
+          <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={loading}
+          >
+            <span className="flex items-center gap-2">
+              {loading && <Spinner data-icon="inline-start" />}
+              <span>{loading ? "Deleting..." : "Delete permanently"}</span>
+            </span>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
