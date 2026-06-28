@@ -14,9 +14,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { deleteBookmarkAction } from "@/lib/actions/bookmarks";
 import { Icons } from "../shared/Icons";
 import { Spinner } from "@/components/ui/spinner";
-import { deleteBookmarkAction } from "@/lib/actions/bookmarks";
 import { toast } from "sonner";
 
 interface DeleteProps {
@@ -29,11 +29,6 @@ export function DeleteBookmark({ bookmarkId, isDemo = false }: DeleteProps) {
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (isDemo) {
-      toast.error("Deleting is disabled in demo mode.");
-      return;
-    }
-
     setLoading(true);
     const result = await deleteBookmarkAction(bookmarkId);
     setLoading(false);
@@ -43,7 +38,7 @@ export function DeleteBookmark({ bookmarkId, isDemo = false }: DeleteProps) {
       return;
     }
 
-    toast.success("Bookmark deleted.", { icon: Icons.delete });
+    toast("Bookmark deleted.", { icon: Icons.delete });
     router.refresh();
   }
 
@@ -53,7 +48,7 @@ export function DeleteBookmark({ bookmarkId, isDemo = false }: DeleteProps) {
         <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
           disabled={isDemo}
-          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold disabled:opacity-50"
+          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold disabled:cursor-not-allowed disabled:opacity-50"
         >
           {Icons.delete}
           Delete Permanently

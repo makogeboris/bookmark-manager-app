@@ -7,19 +7,18 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Icons } from "../shared/Icons";
-import type { Bookmark } from "@/lib/types";
-import { ArchiveBookmark } from "./ArchiveBookmark";
-import { UnarchiveBookmark } from "./UnarchiveBookmark";
-import { DeleteBookmark } from "./DeleteBookmark";
 import EditBookmark from "./EditBookmark";
 import {
   pinBookmarkAction,
   visitBookmarkAction,
 } from "@/lib/actions/bookmarks";
+import type { Bookmark } from "@/lib/types";
+import { UnarchiveBookmark } from "./UnarchiveBookmark";
+import { DeleteBookmark } from "./DeleteBookmark";
+import { ArchiveBookmark } from "./ArchiveBookmark";
 import { toast } from "sonner";
 
 interface ActionsDropdownProps {
@@ -48,6 +47,16 @@ export default function ActionsDropdown({
   }
 
   async function handlePin() {
+    if (isDemo) {
+      toast(
+        bookmark.pinned ? "Bookmark unpinned." : "Bookmark pinned to top.",
+        {
+          icon: Icons.pinIcon,
+        },
+      );
+      return;
+    }
+
     setPinLoading(true);
     const newPinned = !bookmark.pinned;
     const result = await pinBookmarkAction(bookmark.id, newPinned);
@@ -77,7 +86,6 @@ export default function ActionsDropdown({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="mt-1 w-full p-1 md:min-w-50">
-        {/* Common actions */}
         <DropdownMenuItem
           onClick={handleVisit}
           className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
@@ -94,7 +102,6 @@ export default function ActionsDropdown({
           Copy URL
         </DropdownMenuItem>
 
-        {/* Home actions */}
         {!bookmark.isArchived && (
           <>
             <DropdownMenuItem
@@ -108,14 +115,13 @@ export default function ActionsDropdown({
 
             <EditBookmark bookmark={bookmark} isDemo={isDemo} />
 
-            <ArchiveBookmark bookmarkId={bookmark.id} />
+            <ArchiveBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
           </>
         )}
 
-        {/* Archived actions */}
         {bookmark.isArchived && (
           <>
-            <UnarchiveBookmark bookmarkId={bookmark.id} />
+            <UnarchiveBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
 
             <DeleteBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
           </>
