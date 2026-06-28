@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import ActionsDropdown from "./ActionsDropdown";
 import { Icons } from "../shared/Icons";
+import type { Bookmark } from "@/lib/types";
 
 interface BookmarkCardProps {
   title: string;
@@ -16,8 +17,11 @@ interface BookmarkCardProps {
   dateAdded?: string;
   dateVisited?: string;
   pinned?: boolean;
+  isArchived?: boolean;
   onMenuClick?: () => void;
   onPinClick?: () => void;
+  bookmark: Bookmark;
+  isDemo?: boolean;
 }
 
 export default function BookmarkCard({
@@ -30,7 +34,10 @@ export default function BookmarkCard({
   dateAdded,
   dateVisited,
   pinned,
+  isArchived,
   onPinClick,
+  bookmark,
+  isDemo = false,
 }: BookmarkCardProps) {
   const displayUrl = url.replace(/^https?:\/\//, "");
 
@@ -60,7 +67,7 @@ export default function BookmarkCard({
               </div>
             </div>
 
-            <ActionsDropdown />
+            <ActionsDropdown bookmark={bookmark} isDemo={isDemo} />
           </div>
 
           <Separator />

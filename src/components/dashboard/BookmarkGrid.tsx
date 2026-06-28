@@ -107,6 +107,7 @@ export default function BookmarkGrid({
             {paginated.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}
+                bookmark={bookmark}
                 title={bookmark.title}
                 url={bookmark.url}
                 favicon={bookmark.favicon}
@@ -116,6 +117,8 @@ export default function BookmarkGrid({
                 dateAdded={formatDate(bookmark.createdAt)}
                 dateVisited={formatDate(bookmark.lastVisited)}
                 pinned={bookmark.pinned}
+                isArchived={bookmark.isArchived}
+                isDemo={isDemo}
               />
             ))}
           </div>

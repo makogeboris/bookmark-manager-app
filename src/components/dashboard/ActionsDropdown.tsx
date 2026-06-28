@@ -1,17 +1,69 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Icons } from "../shared/Icons";
+import type { Bookmark } from "@/lib/types";
+import { ArchiveBookmark } from "./ArchiveBookmark";
+import { UnarchiveBookmark } from "./UnarchiveBookmark";
+import { DeleteBookmark } from "./DeleteBookmark";
 import EditBookmark from "./EditBookmark";
-import ArchiveBookmark from "./ArchiveBookmark";
-import UnarchiveBookmark from "./UnarchiveBookmark";
-import DeleteBookmark from "./DeleteBookmark";
+import {
+  pinBookmarkAction,
+  visitBookmarkAction,
+} from "@/lib/actions/bookmarks";
+import { toast } from "sonner";
 
-export default function ActionsDropdown() {
+interface ActionsDropdownProps {
+  bookmark: Bookmark;
+  isDemo?: boolean;
+}
+
+export default function ActionsDropdown({
+  bookmark,
+  isDemo = false,
+}: ActionsDropdownProps) {
+  const router = useRouter();
+  const [pinLoading, setPinLoading] = useState(false);
+
+  async function handleVisit() {
+    if (!isDemo) {
+      await visitBookmarkAction(bookmark.id);
+      router.refresh();
+    }
+    window.open(bookmark.url, "_blank", "noopener,noreferrer");
+  }
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(bookmark.url);
+    toast("Link copied to clipboard.", { icon: Icons.copyIcon });
+  }
+
+  async function handlePin() {
+    setPinLoading(true);
+    const newPinned = !bookmark.pinned;
+    const result = await pinBookmarkAction(bookmark.id, newPinned);
+    setPinLoading(false);
+
+    if (!result.success) {
+      toast.error(result.message ?? "Failed to update pin.");
+      return;
+    }
+
+    toast(newPinned ? "Bookmark pinned to top." : "Bookmark unpinned.", {
+      icon: Icons.pinIcon,
+    });
+    router.refresh();
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,28 +77,49 @@ export default function ActionsDropdown() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="mt-1 w-full p-1 md:min-w-50">
-        <DropdownMenuItem className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold">
+        {/* Common actions */}
+        <DropdownMenuItem
+          onClick={handleVisit}
+          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
+        >
           {Icons.visit}
           Visit
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold">
+        <DropdownMenuItem
+          onClick={handleCopy}
+          className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
+        >
           {Icons.copy}
           Copy URL
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold">
-          {Icons.pin}
-          Pin
-        </DropdownMenuItem>
+        {/* Home actions */}
+        {!bookmark.isArchived && (
+          <>
+            <DropdownMenuItem
+              onClick={handlePin}
+              disabled={pinLoading}
+              className="text-muted-foreground flex items-center gap-2.5 px-2! font-semibold"
+            >
+              {Icons.pin}
+              {bookmark.pinned ? "Unpin" : "Pin"}
+            </DropdownMenuItem>
 
-        <EditBookmark />
+            <EditBookmark bookmark={bookmark} isDemo={isDemo} />
 
-        <ArchiveBookmark />
+            <ArchiveBookmark bookmarkId={bookmark.id} />
+          </>
+        )}
 
-        <UnarchiveBookmark />
+        {/* Archived actions */}
+        {bookmark.isArchived && (
+          <>
+            <UnarchiveBookmark bookmarkId={bookmark.id} />
 
-        <DeleteBookmark />
+            <DeleteBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

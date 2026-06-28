@@ -5,10 +5,11 @@ import { Icons } from "../shared/Icons";
 import AddBookmark from "./AddBookmark";
 
 interface HeaderProps {
+  isDemo?: boolean;
   onMenuClick?: () => void;
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header({ isDemo = false, onMenuClick }: HeaderProps) {
   return (
     <header>
       <div className="bg-sidebar border-sidebar-border flex items-center justify-between gap-2.5 border-b px-4 py-3 sm:px-8 sm:py-4">
@@ -25,7 +26,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-4">
-          <AddBookmark />
+          <AddBookmark isDemo={isDemo} />
 
           <AvatarDropdown />
         </div>
