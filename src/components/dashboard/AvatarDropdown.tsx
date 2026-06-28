@@ -41,7 +41,7 @@ export default function AvatarDropdown() {
       await signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push("/login");
+            router.push("/");
             router.refresh();
           },
         },

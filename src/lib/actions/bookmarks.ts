@@ -5,7 +5,6 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-// Helper — get session or throw
 async function requireSession() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
@@ -23,13 +22,31 @@ export async function addBookmarkAction(values: {
   try {
     const session = await requireSession();
 
-    // Parse tags — comma-separated string → array of trimmed strings
+    //  Duplicate detection
+    const normalizedUrl = values.url.replace(/\/$/, "");
+
+    const existing = await prisma.bookmark.findFirst({
+      where: {
+        userId: session.user.id,
+        url: {
+          in: [normalizedUrl, `${normalizedUrl}/`],
+        },
+      },
+    });
+
+    if (existing) {
+      return {
+        success: false,
+        duplicate: true,
+        message: "You've already saved this URL.",
+      };
+    }
+
     const tagNames = values.tags
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
 
-    // Upsert tags and get their ids
     const tagRecords = await Promise.all(
       tagNames.map((name) =>
         prisma.tag.upsert({
@@ -44,7 +61,7 @@ export async function addBookmarkAction(values: {
       data: {
         title: values.title,
         description: values.description,
-        url: values.url,
+        url: normalizedUrl,
         favicon: values.favicon ?? null,
         userId: session.user.id,
         tags: {
@@ -210,56 +227,67 @@ export async function visitBookmarkAction(bookmarkId: string) {
 }
 
 // AI autogenerate metadata
+// This replaces the generateMetadataAction in actions-bookmarks.ts
 export async function generateMetadataAction(url: string) {
   try {
-    // Basic URL validation
-    new URL(url);
+    new URL(url); // validate URL
 
-    const response = await fetch(
-      `${process.env.BETTER_AUTH_URL}/api/fetch-metadata`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      },
+    // Step 1 — fetch metadata via microlink
+    const encoded = encodeURIComponent(url);
+    const res = await fetch(
+      `https://api.microlink.io/?url=${encoded}&meta=true`,
     );
+    const json = await res.json();
 
-    if (!response.ok) throw new Error("Metadata fetch failed");
-
-    const data = await response.json();
-    return {
-      success: true,
-      title: data.title ?? "",
-      description: data.description ?? "",
-      favicon: data.favicon ?? "",
-    };
-  } catch {
-    // Fallback — call OpenGraph directly via a public API
-    try {
-      const encoded = encodeURIComponent(url);
-      const res = await fetch(
-        `https://api.microlink.io/?url=${encoded}&meta=true`,
-      );
-      const json = await res.json();
-
-      if (json.status === "success") {
-        return {
-          success: true,
-          title: json.data.title ?? "",
-          description: json.data.description ?? "",
-          favicon: json.data.logo?.url ?? "",
-        };
-      }
-
-      return {
-        success: false,
-        message: "Could not fetch metadata for this URL.",
-      };
-    } catch {
+    if (json.status !== "success") {
       return {
         success: false,
         message: "Could not fetch metadata for this URL.",
       };
     }
+
+    const title = json.data.title ?? "";
+    const description = json.data.description ?? "";
+    const favicon = json.data.logo?.url ?? "";
+
+    // Step 2 — use Claude to generate relevant tags
+    let tags = "";
+    try {
+      const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 100,
+          messages: [
+            {
+              role: "user",
+              content: `Based on this bookmark:
+Title: ${title}
+Description: ${description}
+URL: ${url}
+
+Generate 3-5 concise, single-word or two-word tags that categorize this bookmark.
+Reply with ONLY a comma-separated list of tags, nothing else.
+Example: JavaScript, Tutorial, Frontend, Learning`,
+            },
+          ],
+        }),
+      });
+
+      if (aiRes.ok) {
+        const aiData = await aiRes.json();
+        tags = aiData.content?.[0]?.text?.trim() ?? "";
+      }
+    } catch {
+      // Tags generation failed silently — title/description still returned
+    }
+
+    return { success: true, title, description, favicon, tags };
+  } catch {
+    return {
+      success: false,
+      message: "Could not fetch metadata for this URL.",
+    };
   }
 }

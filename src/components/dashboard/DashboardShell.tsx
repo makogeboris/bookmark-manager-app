@@ -18,7 +18,6 @@ export default function DashboardShell({
   isDemo = false,
 }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const { selectedTags, toggleTag, clearTags, showArchived, setShowArchived } =
     useDashboard();
 
@@ -31,9 +30,7 @@ export default function DashboardShell({
       archivedCount++;
       return;
     }
-
     homeCount++;
-
     bookmark.tags.forEach((tag) => {
       tagCounts[tag] = (tagCounts[tag] ?? 0) + 1;
     });
@@ -62,7 +59,7 @@ export default function DashboardShell({
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <Header onMenuClick={() => setSidebarOpen(true)} isDemo={isDemo} />
         <main className="flex-1">{children}</main>
       </div>
     </div>

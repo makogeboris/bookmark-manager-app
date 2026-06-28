@@ -14,20 +14,29 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { unarchiveBookmarkAction } from "@/lib/actions/bookmarks";
 import { Icons } from "../shared/Icons";
 import { Spinner } from "@/components/ui/spinner";
-import { unarchiveBookmarkAction } from "@/lib/actions/bookmarks";
 import { toast } from "sonner";
 
 interface UnarchiveProps {
   bookmarkId: string;
+  isDemo?: boolean;
 }
 
-export function UnarchiveBookmark({ bookmarkId }: UnarchiveProps) {
+export function UnarchiveBookmark({
+  bookmarkId,
+  isDemo = false,
+}: UnarchiveProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleUnarchive() {
+    if (isDemo) {
+      toast("Bookmark restored.", { icon: Icons.unarchive });
+      return;
+    }
+
     setLoading(true);
     const result = await unarchiveBookmarkAction(bookmarkId);
     setLoading(false);
@@ -37,7 +46,7 @@ export function UnarchiveBookmark({ bookmarkId }: UnarchiveProps) {
       return;
     }
 
-    toast.success("Bookmark restored.", { icon: Icons.unarchive });
+    toast("Bookmark restored.", { icon: Icons.unarchive });
     router.refresh();
   }
 

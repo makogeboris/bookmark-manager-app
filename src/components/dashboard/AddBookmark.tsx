@@ -59,16 +59,17 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
 
   const description = watch("description") ?? "";
 
-  // Called by AutoGenerate when metadata is fetched
   function handleGenerated(data: {
     title: string;
     description: string;
     url: string;
     favicon: string;
+    tags: string;
   }) {
     setValue("title", data.title, { shouldValidate: true });
     setValue("description", data.description, { shouldValidate: true });
     setValue("url", data.url, { shouldValidate: true });
+    setValue("tags", data.tags, { shouldValidate: true });
     setFavicon(data.favicon);
   }
 
@@ -91,18 +92,18 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
     router.refresh();
   }
 
-  // Demo users see a disabled button with a tooltip
   if (isDemo) {
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="flex">
+            <span tabIndex={0} className="flex cursor-not-allowed">
               <Button
                 type="button"
                 size="icon-lg"
                 disabled
-                className="md:hidden"
+                aria-disabled
+                className="pointer-events-none md:hidden"
               >
                 {Icons.plus}
               </Button>
@@ -110,14 +111,15 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
                 type="button"
                 size="xxl"
                 disabled
-                className="hidden md:flex"
+                aria-disabled
+                className="pointer-events-none hidden md:flex"
               >
                 {Icons.plus}
                 <span>Add Bookmark</span>
               </Button>
             </span>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent side="bottom">
             <p>Adding bookmarks is disabled in demo mode</p>
           </TooltipContent>
         </Tooltip>
@@ -157,7 +159,6 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
           className="flex flex-col gap-6 md:gap-8"
         >
           <div className="flex flex-col gap-4 md:gap-5">
-            {/* Title */}
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="add-title"
@@ -178,7 +179,6 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
               )}
             </div>
 
-            {/* Description */}
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="add-description"
@@ -203,7 +203,6 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
               )}
             </div>
 
-            {/* URL */}
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="add-url"
@@ -223,7 +222,6 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
               )}
             </div>
 
-            {/* Tags */}
             <div className="flex flex-col gap-1.5">
               <Label
                 htmlFor="add-tags"

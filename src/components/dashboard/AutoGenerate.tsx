@@ -33,6 +33,7 @@ interface AutoGenerateProps {
     description: string;
     url: string;
     favicon: string;
+    tags: string;
   }) => void;
 }
 
@@ -59,6 +60,7 @@ export default function AutoGenerate({ onGenerated }: AutoGenerateProps) {
       description: result.description ?? "",
       url: values.url,
       favicon: result.favicon ?? "",
+      tags: result.tags ?? "",
     });
 
     toast.success("Metadata generated successfully.");

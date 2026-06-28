@@ -14,20 +14,26 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { archiveBookmarkAction } from "@/lib/actions/bookmarks";
 import { Icons } from "../shared/Icons";
 import { Spinner } from "@/components/ui/spinner";
-import { archiveBookmarkAction } from "@/lib/actions/bookmarks";
 import { toast } from "sonner";
 
 interface ArchiveProps {
   bookmarkId: string;
+  isDemo?: boolean;
 }
 
-export function ArchiveBookmark({ bookmarkId }: ArchiveProps) {
+export function ArchiveBookmark({ bookmarkId, isDemo = false }: ArchiveProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleArchive() {
+    if (isDemo) {
+      toast("Bookmark archived.", { icon: Icons.archive });
+      return;
+    }
+
     setLoading(true);
     const result = await archiveBookmarkAction(bookmarkId);
     setLoading(false);
@@ -37,7 +43,7 @@ export function ArchiveBookmark({ bookmarkId }: ArchiveProps) {
       return;
     }
 
-    toast.success("Bookmark archived.", { icon: Icons.archive });
+    toast("Bookmark archived.", { icon: Icons.archive });
     router.refresh();
   }
 
