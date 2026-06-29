@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,6 @@ interface BookmarkCardProps {
   dateVisited?: string;
   pinned?: boolean;
   isArchived?: boolean;
-  onMenuClick?: () => void;
   onPinClick?: () => void;
   bookmark: Bookmark;
   isDemo?: boolean;
@@ -34,7 +32,6 @@ export default function BookmarkCard({
   dateAdded,
   dateVisited,
   pinned,
-  isArchived,
   onPinClick,
   bookmark,
   isDemo = false,
@@ -49,7 +46,22 @@ export default function BookmarkCard({
             <div className="flex min-w-0 items-center gap-3">
               <div className="border-accent bg-background flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
                 {favicon ? (
-                  <Image width={44} height={44} src={favicon} alt={title} />
+                  // ← plain <img> avoids next/image domain whitelist issues for favicons
+                  <img
+                    width={44}
+                    height={44}
+                    src={favicon}
+                    alt={title}
+                    className="size-6 object-contain"
+                    onError={(e) => {
+                      // Hide broken favicon, show letter fallback
+                      e.currentTarget.style.display = "none";
+                      const parent = e.currentTarget.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `<span class="text-muted-foreground text-xs font-bold">${title.charAt(0).toUpperCase()}</span>`;
+                      }
+                    }}
+                  />
                 ) : (
                   <span className="text-muted-foreground text-xs font-bold">
                     {title.charAt(0).toUpperCase()}
@@ -101,14 +113,12 @@ export default function BookmarkCard({
                 {visitCount}
               </span>
             )}
-
             {dateAdded && (
               <span className="flex items-center gap-1.5">
                 {Icons.clock}
                 {dateAdded}
               </span>
             )}
-
             {dateVisited && (
               <span className="flex items-center gap-1.5">
                 {Icons.calendar}

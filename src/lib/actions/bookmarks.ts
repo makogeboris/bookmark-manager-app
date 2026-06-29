@@ -227,12 +227,11 @@ export async function visitBookmarkAction(bookmarkId: string) {
 }
 
 // AI autogenerate metadata
-// This replaces the generateMetadataAction in actions-bookmarks.ts
 export async function generateMetadataAction(url: string) {
   try {
-    new URL(url); // validate URL
+    new URL(url);
 
-    // Step 1 — fetch metadata via microlink
+    // fetch metadata via microlink
     const encoded = encodeURIComponent(url);
     const res = await fetch(
       `https://api.microlink.io/?url=${encoded}&meta=true`,
@@ -248,16 +247,23 @@ export async function generateMetadataAction(url: string) {
 
     const title = json.data.title ?? "";
     const description = json.data.description ?? "";
-    const favicon = json.data.logo?.url ?? "";
+    const favicon =
+      json.data.logo?.url ??
+      json.data.image?.url ??
+      `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`;
 
-    // Step 2 — use Claude to generate relevant tags
+    // generate tags via Claude
     let tags = "";
     try {
       const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.ANTHROPIC_API_KEY!,
+          "anthropic-version": "2023-06-01",
+        },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6",
+          model: "claude-haiku-4-5-20251001",
           max_tokens: 100,
           messages: [
             {
@@ -267,9 +273,8 @@ Title: ${title}
 Description: ${description}
 URL: ${url}
 
-Generate 3-5 concise, single-word or two-word tags that categorize this bookmark.
-Reply with ONLY a comma-separated list of tags, nothing else.
-Example: JavaScript, Tutorial, Frontend, Learning`,
+Generate 3-5 concise tags that categorize this bookmark. Tags should be single words or short two-word phrases, capitalized.
+Reply with ONLY a comma-separated list. Example: JavaScript, Tutorial, Frontend, Learning`,
             },
           ],
         }),
@@ -278,13 +283,17 @@ Example: JavaScript, Tutorial, Frontend, Learning`,
       if (aiRes.ok) {
         const aiData = await aiRes.json();
         tags = aiData.content?.[0]?.text?.trim() ?? "";
+      } else {
+        console.error("Claude API error:", await aiRes.text());
       }
-    } catch {
-      // Tags generation failed silently — title/description still returned
+    } catch (err) {
+      // Tags fail silently — title/description/favicon still returned
+      console.error("Tag generation error:", err);
     }
 
     return { success: true, title, description, favicon, tags };
-  } catch {
+  } catch (err) {
+    console.error("generateMetadataAction error:", err);
     return {
       success: false,
       message: "Could not fetch metadata for this URL.",
