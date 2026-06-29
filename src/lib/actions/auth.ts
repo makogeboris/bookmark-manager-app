@@ -209,3 +209,18 @@ export async function changePasswordAction(values: {
     return { success: false, message: "Something went wrong." };
   }
 }
+
+// Update Avatar
+export async function updateAvatarAction(imageUrl: string) {
+  try {
+    await auth.api.updateUser({
+      body: { image: imageUrl },
+      headers: await headers(),
+    });
+    return { success: true };
+  } catch (error) {
+    if (error instanceof APIError)
+      return { success: false, message: error.message };
+    return { success: false, message: "Failed to update avatar." };
+  }
+}

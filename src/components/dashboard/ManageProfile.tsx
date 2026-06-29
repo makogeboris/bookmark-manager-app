@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarUpload } from "./AvatarUpload";
 import {
   updateProfileAction,
   changePasswordAction,
@@ -67,6 +68,9 @@ export default function ManageProfile({
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const displayImage = avatarUrl ?? user?.image ?? null;
 
   const initials = user?.name
     ? user.name
@@ -188,7 +192,7 @@ export default function ManageProfile({
 
         <div className="scrollbar-thumb-sidebar-border flex max-h-[70vh] scrollbar-thin scrollbar-track-transparent flex-col gap-6 overflow-y-auto px-6 pb-6 pl-1">
           {/* Avatar */}
-          <div className="flex items-center gap-4">
+          {/* <div className="flex items-center gap-4">
             <Avatar size="lg" className="size-14">
               <AvatarImage
                 src={user?.image ?? "/images/image-avatar.webp"}
@@ -202,6 +206,24 @@ export default function ManageProfile({
               </p>
               <p className="text-muted-foreground text-xs">
                 {user?.email ?? "emily101@email.com"}
+              </p>
+            </div>
+          </div> */}
+          <div className="flex items-center gap-4">
+            <AvatarUpload
+              currentImage={displayImage}
+              initials={initials}
+              onUploaded={(url) => setAvatarUrl(url)}
+            />
+            <div>
+              <p className="text-foreground text-sm font-semibold">
+                {user?.name ?? "—"}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {user?.email ?? "—"}
+              </p>
+              <p className="text-muted-foreground mt-0.5 text-xs">
+                Click your avatar to change it
               </p>
             </div>
           </div>
