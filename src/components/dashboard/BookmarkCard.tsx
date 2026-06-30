@@ -52,7 +52,7 @@ export default function BookmarkCard({
                     height={44}
                     src={favicon}
                     alt={title}
-                    className="size-6 object-contain"
+                    className="size-11 object-contain"
                     onError={(e) => {
                       // Hide broken favicon, show letter fallback
                       e.currentTarget.style.display = "none";
