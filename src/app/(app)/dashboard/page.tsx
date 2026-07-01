@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import BookmarkGrid from "@/components/dashboard/BookmarkGrid";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 import { DashboardProvider } from "@/lib/dashboard-context";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
@@ -38,7 +39,9 @@ export default async function DashboardPage() {
 
   return (
     <DashboardProvider>
-      <BookmarkGrid bookmarks={bookmarks} />
+      <DashboardShell bookmarks={bookmarks}>
+        <BookmarkGrid bookmarks={bookmarks} />
+      </DashboardShell>
     </DashboardProvider>
   );
 }
