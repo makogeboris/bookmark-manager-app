@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -91,6 +91,16 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
     setOpen(false);
     router.refresh();
   }
+
+  const url = watch("url");
+
+  useEffect(() => {
+    if (!url) return;
+    try {
+      const hostname = new URL(url).hostname;
+      setFavicon(`https://www.google.com/s2/favicons?domain=${hostname}&sz=64`);
+    } catch {}
+  }, [url]);
 
   if (isDemo) {
     return (

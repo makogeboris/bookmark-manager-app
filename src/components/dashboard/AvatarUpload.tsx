@@ -29,11 +29,14 @@ export function AvatarUpload({
         showSkipCropButton: false,
         sources: ["local", "camera"],
         multiple: false,
-        maxFileSize: 5_000_000, // 5MB
+        maxFileSize: 5_000_000,
         clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
       }}
+      onError={(error) => {
+        console.error("Cloudinary widget error:", error);
+        toast.error("Upload failed to initialize. Please try again.");
+      }}
       onSuccess={async (result) => {
-        // result.info is typed as string | object — narrow it
         if (typeof result.info !== "object" || !result.info) return;
         const info = result.info as { secure_url: string };
         const url = info.secure_url;
@@ -48,11 +51,14 @@ export function AvatarUpload({
         }
       }}
     >
-      {({ open }) => (
+      {({ open, isLoading }) => (
         <button
           type="button"
-          onClick={() => open()}
-          className="group relative shrink-0"
+          disabled={isLoading}
+          onClick={() => {
+            if (!isLoading) open();
+          }}
+          className="group relative shrink-0 disabled:opacity-50"
           aria-label="Change avatar"
         >
           <Avatar size="lg" className="size-14">
@@ -62,9 +68,10 @@ export function AvatarUpload({
             />
             <AvatarFallback className="text-lg">{initials}</AvatarFallback>
           </Avatar>
-          {/* Overlay on hover */}
           <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-            <span className="text-xs font-semibold text-white">Edit</span>
+            <span className="text-xs font-semibold text-white">
+              {isLoading ? "Loading..." : "Edit"}
+            </span>
           </div>
         </button>
       )}
