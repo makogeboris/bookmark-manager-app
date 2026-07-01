@@ -39,9 +39,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardProvider>
-      <DashboardShell bookmarks={bookmarks}>
-        <BookmarkGrid bookmarks={bookmarks} />
-      </DashboardShell>
+      <BookmarkGrid bookmarks={bookmarks} />
     </DashboardProvider>
   );
 }
