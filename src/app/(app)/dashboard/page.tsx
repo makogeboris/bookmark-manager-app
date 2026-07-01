@@ -1,7 +1,5 @@
 import { Metadata } from "next";
 import BookmarkGrid from "@/components/dashboard/BookmarkGrid";
-import DashboardShell from "@/components/dashboard/DashboardShell";
-import { DashboardProvider } from "@/lib/dashboard-context";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -17,9 +15,7 @@ export default async function DashboardPage() {
 
   const raw = await prisma.bookmark.findMany({
     where: { userId: session.user.id },
-    include: {
-      tags: { include: { tag: true } },
-    },
+    include: { tags: { include: { tag: true } } },
     orderBy: { createdAt: "desc" },
   });
 
@@ -37,9 +33,5 @@ export default async function DashboardPage() {
     lastVisited: b.lastVisited ? b.lastVisited.toISOString() : null,
   }));
 
-  return (
-    <DashboardProvider>
-      <BookmarkGrid bookmarks={bookmarks} />
-    </DashboardProvider>
-  );
+  return <BookmarkGrid bookmarks={bookmarks} />;
 }

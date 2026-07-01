@@ -21,8 +21,8 @@ export function AvatarUpload({
 
   return (
     <CldUploadWidget
+      // For signed uploads: signatureEndpoint only, no uploadPreset
       signatureEndpoint="/api/sign-cloudinary-params"
-      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       options={{
         folder: "bookmark-manager/avatars",
         cropping: true,
