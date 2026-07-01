@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { generateMetadataAction } from "@/lib/actions/bookmarks";
 import { toast } from "sonner";
+import { Icons } from "../shared/Icons";
 
 const schema = z.object({
   url: z.string().url("Please enter a valid URL"),
@@ -75,9 +76,10 @@ export default function AutoGenerate({ onGenerated }: AutoGenerateProps) {
           type="button"
           variant="ghost"
           size="sm"
-          className="text-muted-foreground hover:text-foreground h-auto p-0 pr-5 text-xs font-medium"
+          className="text-foreground hover:text-muted-foreground flex h-auto items-center gap-1 p-0 pr-5 text-sm font-medium"
         >
-          Auto generate
+          {Icons.robot}
+          Generate with AI
         </Button>
       </DialogTrigger>
 
