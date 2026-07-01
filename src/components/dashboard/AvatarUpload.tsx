@@ -22,6 +22,7 @@ export function AvatarUpload({
   return (
     <CldUploadWidget
       signatureEndpoint="/api/sign-cloudinary-params"
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       options={{
         folder: "bookmark-manager/avatars",
         cropping: true,
@@ -34,7 +35,7 @@ export function AvatarUpload({
       }}
       onError={(error) => {
         console.error("Cloudinary widget error:", error);
-        toast.error("Upload failed to initialize. Please try again.");
+        toast.error("Upload failed. Please try again.");
       }}
       onSuccess={async (result) => {
         if (typeof result.info !== "object" || !result.info) return;
