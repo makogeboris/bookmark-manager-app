@@ -252,7 +252,7 @@ export async function generateMetadataAction(url: string) {
       json.data.image?.url ??
       `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`;
 
-    // generate tags via Claude
+    // Step 2: generate tags via Claude
     let tags = "";
     try {
       const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
@@ -264,17 +264,24 @@ export async function generateMetadataAction(url: string) {
         },
         body: JSON.stringify({
           model: "claude-haiku-4-5-20251001",
-          max_tokens: 100,
+          max_tokens: 50,
           messages: [
             {
               role: "user",
-              content: `Based on this bookmark:
+              content: `You are a bookmark tagging assistant. Given a webpage, output exactly 3 to 4 single-word tags that best categorize it.
+
+Rules:
+- Each tag must be a single word (no spaces, no hyphens)
+- Capitalize the first letter only (e.g. "JavaScript" not "javascript" or "JAVASCRIPT")
+- Tags must be broad enough to be reusable across similar bookmarks
+- Output only the comma-separated tags — no explanation, no punctuation, no extra text
+
+Webpage:
 Title: ${title}
 Description: ${description}
 URL: ${url}
 
-Generate 3-5 concise tags that categorize this bookmark. Tags should be single words or short two-word phrases, capitalized.
-Reply with ONLY a comma-separated list. Example: JavaScript, Tutorial, Frontend, Learning`,
+Tags:`,
             },
           ],
         }),
@@ -282,12 +289,18 @@ Reply with ONLY a comma-separated list. Example: JavaScript, Tutorial, Frontend,
 
       if (aiRes.ok) {
         const aiData = await aiRes.json();
-        tags = aiData.content?.[0]?.text?.trim() ?? "";
+        const raw = aiData.content?.[0]?.text?.trim() ?? "";
+        // Sanitize — strip anything that snuck through (numbers, special chars)
+        tags = raw
+          .split(",")
+          .map((t: string) => t.trim())
+          .filter((t: string) => /^[A-Za-z]+$/.test(t))
+          .slice(0, 4)
+          .join(", ");
       } else {
         console.error("Claude API error:", await aiRes.text());
       }
     } catch (err) {
-      // Tags fail silently — title/description/favicon still returned
       console.error("Tag generation error:", err);
     }
 
