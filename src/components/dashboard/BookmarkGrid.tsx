@@ -24,6 +24,43 @@ function formatDate(dateStr: string | null): string | undefined {
   }
 }
 
+// Dynamic heading
+function useHeading(
+  showArchived: boolean,
+  search: string,
+  selectedTags: string[],
+): React.ReactNode {
+  const trimmed = search.trim();
+
+  // Search takes priority
+  if (trimmed) {
+    return (
+      <>
+        {showArchived ? "Archived results for: " : "Results for: "}
+        <span className="text-primary dark:text-muted-foreground">
+          &ldquo;{trimmed}&rdquo;
+        </span>
+      </>
+    );
+  }
+
+  // Tag filter
+  if (selectedTags.length > 0) {
+    const tagList = selectedTags.join(", ");
+    return (
+      <>
+        {showArchived ? "Archived bookmarks tagged: " : "Bookmarks tagged: "}
+        <span className="text-primary dark:text-muted-foreground">
+          &lsquo;{tagList}&rsquo;
+        </span>
+      </>
+    );
+  }
+
+  // Default
+  return showArchived ? "Archived bookmarks" : "All bookmarks";
+}
+
 export default function BookmarkGrid({
   bookmarks,
   isDemo = false,
@@ -31,7 +68,7 @@ export default function BookmarkGrid({
   const { selectedTags, showArchived, search, sort, setSort } = useDashboard();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const filterKey = `${selectedTags.join(",")}-${showArchived}-${search}-${sort}`;
+  const heading = useHeading(showArchived, search, selectedTags);
 
   const filtered = useMemo(() => {
     let result = bookmarks.filter((b) =>
@@ -79,11 +116,14 @@ export default function BookmarkGrid({
     safePage * PER_PAGE,
   );
 
+  // Reset to page 1 when filters change
+  const filterKey = `${selectedTags.join(",")}-${showArchived}-${search}-${sort}`;
+
   return (
     <div className="flex flex-col gap-5 px-4 py-6 sm:p-8">
       <div className="flex items-center justify-between">
         <h1 className="xs:text-2xl text-foreground text-xl font-bold">
-          {showArchived ? "Archived bookmarks" : "All bookmarks"}
+          {heading}
         </h1>
         <SortDropdown value={sort} onChange={setSort} />
       </div>
@@ -94,11 +134,13 @@ export default function BookmarkGrid({
             No bookmarks found
           </p>
           <p className="text-sm">
-            {selectedTags.length > 0
-              ? "Try clearing your tag filters."
-              : showArchived
-                ? "Nothing archived yet."
-                : "Add your first bookmark to get started."}
+            {search.trim()
+              ? `No results for "${search.trim()}". Try a different search.`
+              : selectedTags.length > 0
+                ? "No bookmarks match the selected tags."
+                : showArchived
+                  ? "Nothing archived yet."
+                  : "Add your first bookmark to get started."}
           </p>
         </div>
       ) : (
@@ -106,7 +148,7 @@ export default function BookmarkGrid({
           <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(288px,1fr))] gap-8">
             {paginated.map((bookmark) => (
               <BookmarkCard
-                key={bookmark.id}
+                key={`${bookmark.id}-${filterKey}`}
                 bookmark={bookmark}
                 title={bookmark.title}
                 url={bookmark.url}

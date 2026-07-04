@@ -53,14 +53,21 @@ type ProfileSchema = z.infer<typeof profileSchema>;
 type ChangeEmailSchema = z.infer<typeof changeEmailSchema>;
 type PasswordSchema = z.infer<typeof passwordSchema>;
 
+// Demo defaults
+const DEMO_NAME = "Demo User";
+const DEMO_EMAIL = "demo@bookmark.app";
+const DEMO_AVATAR = "/images/image-avatar.webp";
+
 interface ManageProfileProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isDemo?: boolean;
 }
 
 export default function ManageProfile({
   open,
   onOpenChange,
+  isDemo = false,
 }: ManageProfileProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -68,18 +75,21 @@ export default function ManageProfile({
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const displayImage = avatarUrl ?? user?.image ?? null;
 
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "?";
+  // For demo use placeholder values, for auth use real session values
+  const displayName = isDemo ? DEMO_NAME : (user?.name ?? "—");
+  const displayEmail = isDemo ? DEMO_EMAIL : (user?.email ?? "—");
+  const displayImage = isDemo
+    ? DEMO_AVATAR
+    : (avatarUrl ?? user?.image ?? null);
+
+  const initials = displayName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   // Profile form
   const profileForm = useForm<ProfileSchema>({
@@ -88,19 +98,23 @@ export default function ManageProfile({
   });
 
   useEffect(() => {
-    if (user) {
+    if (isDemo) {
+      profileForm.reset({ name: DEMO_NAME });
+    } else if (user) {
       profileForm.reset({ name: user.name });
     }
-  }, [user?.name]);
+  }, [user?.name, isDemo]);
 
   async function onProfileSubmit(values: ProfileSchema) {
+    if (isDemo) {
+      toast.error("Profile editing is disabled in demo mode.");
+      return;
+    }
     const result = await updateProfileAction(values);
-
     if (result.success) {
       toast.success("Name updated successfully.");
       return;
     }
-
     toast.error(result.message);
   }
 
@@ -111,18 +125,19 @@ export default function ManageProfile({
   });
 
   async function onEmailSubmit(values: ChangeEmailSchema) {
+    if (isDemo) {
+      toast.error("Email editing is disabled in demo mode.");
+      return;
+    }
     const { error } = await authClient.changeEmail({
       newEmail: values.newEmail,
       callbackURL: "/dashboard",
     });
-
     if (error) {
       toast.error(error.message ?? "Something went wrong.");
       return;
     }
-
     toast.success("Confirmation email sent to your new address.");
-
     emailForm.reset();
   }
 
@@ -132,37 +147,38 @@ export default function ManageProfile({
   });
 
   async function onPasswordSubmit(values: PasswordSchema) {
+    if (isDemo) {
+      toast.error("Password editing is disabled in demo mode.");
+      return;
+    }
     const result = await changePasswordAction({
       currentPassword: values.currentPassword,
       newPassword: values.newPassword,
     });
-
     if (result.success) {
       toast.success(result.message ?? "Password updated.");
-
       passwordForm.reset();
       return;
     }
-
     toast.error(result.message ?? "Unable to update password.");
   }
 
   // Delete account
   async function handleDeleteAccount() {
+    if (isDemo) {
+      toast.error("Account deletion is disabled in demo mode.");
+      return;
+    }
     try {
       setIsDeleting(true);
-
       const result = await deleteAccountAction();
-
       if (result.success) {
         toast.success("Account deleted.");
-
         onOpenChange(false);
         router.push("/");
         router.refresh();
         return;
       }
-
       toast.error(result.message ?? "Failed to delete account.");
     } finally {
       setIsDeleting(false);
@@ -175,6 +191,8 @@ export default function ManageProfile({
     passwordForm.formState.isSubmitting ||
     isDeleting;
 
+  const formDisabled = isDemo || authInProgress;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -186,45 +204,39 @@ export default function ManageProfile({
             Manage Profile
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-sm">
-            Update your personal information and account settings.
+            {isDemo
+              ? "You are viewing a demo profile. Sign up to manage your own account."
+              : "Update your personal information and account settings."}
           </DialogDescription>
         </DialogHeader>
 
         <div className="scrollbar-thumb-sidebar-border flex max-h-[70vh] scrollbar-thin scrollbar-track-transparent flex-col gap-6 overflow-y-auto px-6 pb-6 pl-1">
           {/* Avatar */}
-          {/* <div className="flex items-center gap-4">
-            <Avatar size="lg" className="size-14">
-              <AvatarImage
-                src={user?.image ?? "/images/image-avatar.webp"}
-                alt={user?.name ?? ""}
-              />
-              <AvatarFallback className="text-lg">{initials}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-foreground text-sm font-semibold">
-                {user?.name ?? "Emily Carter"}
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {user?.email ?? "emily101@email.com"}
-              </p>
-            </div>
-          </div> */}
           <div className="flex items-center gap-4">
-            <AvatarUpload
-              currentImage={displayImage}
-              initials={initials}
-              onUploaded={(url) => setAvatarUrl(url)}
-            />
+            {isDemo ? (
+              // Demo
+              <Avatar size="lg" className="size-14">
+                <AvatarImage src={DEMO_AVATAR} alt={DEMO_NAME} />
+                <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+              </Avatar>
+            ) : (
+              // Auth
+              <AvatarUpload
+                currentImage={displayImage}
+                initials={initials}
+                onUploaded={(url) => setAvatarUrl(url)}
+              />
+            )}
             <div>
               <p className="text-foreground text-sm font-semibold">
-                {user?.name ?? "—"}
+                {displayName}
               </p>
-              <p className="text-muted-foreground text-xs">
-                {user?.email ?? "—"}
-              </p>
-              <p className="text-muted-foreground mt-0.5 text-xs">
-                Click your avatar to change it
-              </p>
+              <p className="text-muted-foreground text-xs">{displayEmail}</p>
+              {!isDemo && (
+                <p className="text-muted-foreground mt-0.5 text-xs">
+                  Click your avatar to change it
+                </p>
+              )}
             </div>
           </div>
 
@@ -246,11 +258,10 @@ export default function ManageProfile({
               >
                 Full Name
               </Label>
-
               <Input
                 id="name"
                 className="h-11"
-                disabled={authInProgress}
+                disabled={formDisabled}
                 {...profileForm.register("name")}
               />
               {profileForm.formState.errors.name && (
@@ -260,11 +271,7 @@ export default function ManageProfile({
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="self-end"
-              disabled={authInProgress}
-            >
+            <Button type="submit" className="self-end" disabled={formDisabled}>
               <span className="flex items-center gap-2">
                 {profileForm.formState.isSubmitting && (
                   <Spinner data-icon="inline-start" />
@@ -289,7 +296,7 @@ export default function ManageProfile({
             <p className="text-muted-foreground text-sm">
               Current:{" "}
               <span className="text-foreground font-medium">
-                {user?.email ?? "emily101@email.com"}
+                {displayEmail}
               </span>
             </p>
 
@@ -304,7 +311,7 @@ export default function ManageProfile({
                 id="new-email"
                 type="email"
                 className="h-11"
-                disabled={authInProgress}
+                disabled={formDisabled}
                 {...emailForm.register("newEmail")}
               />
               {emailForm.formState.errors.newEmail && (
@@ -314,11 +321,7 @@ export default function ManageProfile({
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="self-end"
-              disabled={authInProgress}
-            >
+            <Button type="submit" className="self-end" disabled={formDisabled}>
               <span className="flex items-center gap-2">
                 {emailForm.formState.isSubmitting && (
                   <Spinner data-icon="inline-start" />
@@ -348,10 +351,9 @@ export default function ManageProfile({
               >
                 Current Password
               </Label>
-
               <PasswordInput
                 id="current-password"
-                disabled={authInProgress}
+                disabled={formDisabled}
                 {...passwordForm.register("currentPassword")}
               />
               {passwordForm.formState.errors.currentPassword && (
@@ -368,10 +370,9 @@ export default function ManageProfile({
               >
                 New Password
               </Label>
-
               <PasswordInput
                 id="new-password"
-                disabled={authInProgress}
+                disabled={formDisabled}
                 {...passwordForm.register("newPassword")}
               />
               {passwordForm.formState.errors.newPassword && (
@@ -388,10 +389,9 @@ export default function ManageProfile({
               >
                 Confirm New Password
               </Label>
-
               <PasswordInput
                 id="confirm-password"
-                disabled={authInProgress}
+                disabled={formDisabled}
                 {...passwordForm.register("confirmPassword")}
               />
               {passwordForm.formState.errors.confirmPassword && (
@@ -401,11 +401,7 @@ export default function ManageProfile({
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="self-end"
-              disabled={authInProgress}
-            >
+            <Button type="submit" className="self-end" disabled={formDisabled}>
               <span className="flex items-center gap-2">
                 {passwordForm.formState.isSubmitting && (
                   <Spinner data-icon="inline-start" />
@@ -434,7 +430,7 @@ export default function ManageProfile({
                 type="button"
                 variant="destructive"
                 className="self-start"
-                disabled={authInProgress}
+                disabled={formDisabled}
                 onClick={() => setShowDeleteConfirm(true)}
               >
                 Delete Account
@@ -449,17 +445,16 @@ export default function ManageProfile({
                     type="button"
                     variant="outline"
                     size="sm"
-                    disabled={authInProgress}
+                    disabled={formDisabled}
                     onClick={() => setShowDeleteConfirm(false)}
                   >
                     Cancel
                   </Button>
-
                   <Button
                     type="button"
                     variant="destructive"
                     size="sm"
-                    disabled={authInProgress}
+                    disabled={formDisabled}
                     onClick={handleDeleteAccount}
                   >
                     <span className="flex items-center gap-2">
@@ -478,11 +473,3 @@ export default function ManageProfile({
     </Dialog>
   );
 }
-
-// toast("Link copied!", {
-//   icon: Icons.copyIcon,
-// });
-
-// toast.success("Link copied!", {
-//   icon: Icons.copyIcon,
-// });
