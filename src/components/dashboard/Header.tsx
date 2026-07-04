@@ -28,7 +28,7 @@ export default function Header({ isDemo = false, onMenuClick }: HeaderProps) {
         <div className="flex items-center gap-2.5 sm:gap-4">
           <AddBookmark isDemo={isDemo} />
 
-          <AvatarDropdown />
+          <AvatarDropdown isDemo={isDemo} />
         </div>
       </div>
     </header>
