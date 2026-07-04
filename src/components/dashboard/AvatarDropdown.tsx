@@ -87,10 +87,10 @@ export default function AvatarDropdown() {
 
             <div className="flex flex-col">
               <p className="text-card-foreground text-sm font-semibold">
-                {user?.name ?? "Emily Carter"}
+                {user?.name ?? "Demo User"}
               </p>
               <p className="text-muted-foreground text-sm font-semibold">
-                {user?.email ?? "emily101@email.com"}
+                {user?.email ?? "demo@bookmark.app"}
               </p>
             </div>
           </DropdownMenuItem>
