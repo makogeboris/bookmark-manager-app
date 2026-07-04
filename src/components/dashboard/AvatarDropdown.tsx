@@ -18,7 +18,13 @@ import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { Spinner } from "../ui/spinner";
 
-export default function AvatarDropdown() {
+interface AvatarDropdownProps {
+  isDemo?: boolean;
+}
+
+export default function AvatarDropdown({
+  isDemo = false,
+}: AvatarDropdownProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { data: session } = useSession();
@@ -134,7 +140,11 @@ export default function AvatarDropdown() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ManageProfile open={profileOpen} onOpenChange={setProfileOpen} />
+      <ManageProfile
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        isDemo={isDemo}
+      />
     </>
   );
 }
