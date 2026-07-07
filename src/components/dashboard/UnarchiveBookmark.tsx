@@ -32,6 +32,7 @@ export function UnarchiveBookmark({
   const [loading, setLoading] = useState(false);
 
   async function handleUnarchive() {
+    // Demo — toast and close dialog without hitting the DB
     if (isDemo) {
       toast("Bookmark restored.", { icon: Icons.unarchive });
       return;

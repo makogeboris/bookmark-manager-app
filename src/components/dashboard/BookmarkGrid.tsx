@@ -13,6 +13,10 @@ const PER_PAGE = 9;
 interface BookmarkGridProps {
   bookmarks: Bookmark[];
   isDemo?: boolean;
+  // Demo-only local mutation callbacks
+  onPin?: (bookmarkId: string) => void;
+  onArchive?: (bookmarkId: string) => void;
+  onUnarchive?: (bookmarkId: string) => void;
 }
 
 function formatDate(dateStr: string | null): string | undefined {
@@ -24,7 +28,6 @@ function formatDate(dateStr: string | null): string | undefined {
   }
 }
 
-// Dynamic heading
 function useHeading(
   showArchived: boolean,
   search: string,
@@ -32,38 +35,34 @@ function useHeading(
 ): React.ReactNode {
   const trimmed = search.trim();
 
-  // Search takes priority
   if (trimmed) {
     return (
       <>
         {showArchived ? "Archived results for: " : "Results for: "}
-        <span className="text-primary dark:text-muted-foreground">
-          &ldquo;{trimmed}&rdquo;
-        </span>
+        <span className="text-primary">&ldquo;{trimmed}&rdquo;</span>
       </>
     );
   }
 
-  // Tag filter
   if (selectedTags.length > 0) {
     const tagList = selectedTags.join(", ");
     return (
       <>
         {showArchived ? "Archived bookmarks tagged: " : "Bookmarks tagged: "}
-        <span className="text-primary dark:text-muted-foreground">
-          &lsquo;{tagList}&rsquo;
-        </span>
+        <span className="text-primary">&lsquo;{tagList}&rsquo;</span>
       </>
     );
   }
 
-  // Default
   return showArchived ? "Archived bookmarks" : "All bookmarks";
 }
 
 export default function BookmarkGrid({
   bookmarks,
   isDemo = false,
+  onPin,
+  onArchive,
+  onUnarchive,
 }: BookmarkGridProps) {
   const { selectedTags, showArchived, search, sort, setSort } = useDashboard();
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,7 +115,6 @@ export default function BookmarkGrid({
     safePage * PER_PAGE,
   );
 
-  // Reset to page 1 when filters change
   const filterKey = `${selectedTags.join(",")}-${showArchived}-${search}-${sort}`;
 
   return (
@@ -161,6 +159,9 @@ export default function BookmarkGrid({
                 pinned={bookmark.pinned}
                 isArchived={bookmark.isArchived}
                 isDemo={isDemo}
+                onPin={onPin}
+                onArchive={onArchive}
+                onUnarchive={onUnarchive}
               />
             ))}
           </div>

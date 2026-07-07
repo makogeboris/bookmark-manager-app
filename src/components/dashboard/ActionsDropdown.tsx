@@ -24,11 +24,17 @@ import { toast } from "sonner";
 interface ActionsDropdownProps {
   bookmark: Bookmark;
   isDemo?: boolean;
+  onPin?: (bookmarkId: string) => void;
+  onArchive?: (bookmarkId: string) => void;
+  onUnarchive?: (bookmarkId: string) => void;
 }
 
 export default function ActionsDropdown({
   bookmark,
   isDemo = false,
+  onPin,
+  onArchive,
+  onUnarchive,
 }: ActionsDropdownProps) {
   const router = useRouter();
   const [pinLoading, setPinLoading] = useState(false);
@@ -48,12 +54,15 @@ export default function ActionsDropdown({
 
   async function handlePin() {
     if (isDemo) {
+      onPin?.(bookmark.id);
+
       toast(
         bookmark.pinned ? "Bookmark unpinned." : "Bookmark pinned to top.",
         {
           icon: Icons.pinIcon,
         },
       );
+
       return;
     }
 
