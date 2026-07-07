@@ -29,6 +29,7 @@ export function ArchiveBookmark({ bookmarkId, isDemo = false }: ArchiveProps) {
   const [loading, setLoading] = useState(false);
 
   async function handleArchive() {
+    // Demo — toast and close dialog without hitting the DB
     if (isDemo) {
       toast("Bookmark archived.", { icon: Icons.archive });
       return;

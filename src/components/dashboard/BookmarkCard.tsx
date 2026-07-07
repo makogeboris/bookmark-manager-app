@@ -1,6 +1,5 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "../ui/separator";
 import ActionsDropdown from "./ActionsDropdown";
 import { Icons } from "../shared/Icons";
@@ -23,9 +22,11 @@ interface BookmarkCardProps {
   dateVisited?: string;
   pinned?: boolean;
   isArchived?: boolean;
-  onPinClick?: () => void;
   bookmark: Bookmark;
   isDemo?: boolean;
+  onPin?: (bookmarkId: string) => void;
+  onArchive?: (bookmarkId: string) => void;
+  onUnarchive?: (bookmarkId: string) => void;
 }
 
 export default function BookmarkCard({
@@ -38,9 +39,11 @@ export default function BookmarkCard({
   dateAdded,
   dateVisited,
   pinned,
-  onPinClick,
   bookmark,
   isDemo = false,
+  onPin,
+  onArchive,
+  onUnarchive,
 }: BookmarkCardProps) {
   const displayUrl = url.replace(/^https?:\/\//, "");
 
@@ -84,7 +87,13 @@ export default function BookmarkCard({
                 </div>
               </div>
 
-              <ActionsDropdown bookmark={bookmark} isDemo={isDemo} />
+              <ActionsDropdown
+                bookmark={bookmark}
+                isDemo={isDemo}
+                onPin={onPin}
+                onArchive={onArchive}
+                onUnarchive={onUnarchive}
+              />
             </div>
 
             <Separator />
@@ -158,14 +167,9 @@ export default function BookmarkCard({
             </div>
 
             {pinned && (
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={onPinClick}
-                className="text-foreground hover:text-foreground size-4 shrink-0 hover:bg-none"
-              >
+              <span className="text-foreground size-4 shrink-0">
                 {Icons.pin}
-              </Button>
+              </span>
             )}
           </CardFooter>
         </CardContent>
