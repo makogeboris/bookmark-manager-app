@@ -55,14 +55,10 @@ export default function ActionsDropdown({
   async function handlePin() {
     if (isDemo) {
       onPin?.(bookmark.id);
-
       toast(
         bookmark.pinned ? "Bookmark unpinned." : "Bookmark pinned to top.",
-        {
-          icon: Icons.pinIcon,
-        },
+        { icon: Icons.pinIcon },
       );
-
       return;
     }
 
@@ -124,13 +120,21 @@ export default function ActionsDropdown({
 
             <EditBookmark bookmark={bookmark} isDemo={isDemo} />
 
-            <ArchiveBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
+            <ArchiveBookmark
+              bookmarkId={bookmark.id}
+              isDemo={isDemo}
+              onArchive={onArchive}
+            />
           </>
         )}
 
         {bookmark.isArchived && (
           <>
-            <UnarchiveBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
+            <UnarchiveBookmark
+              bookmarkId={bookmark.id}
+              isDemo={isDemo}
+              onUnarchive={onUnarchive}
+            />
 
             <DeleteBookmark bookmarkId={bookmark.id} isDemo={isDemo} />
           </>

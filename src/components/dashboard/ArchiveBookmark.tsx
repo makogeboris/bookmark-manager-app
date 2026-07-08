@@ -22,15 +22,21 @@ import { toast } from "sonner";
 interface ArchiveProps {
   bookmarkId: string;
   isDemo?: boolean;
+  onArchive?: (bookmarkId: string) => void;
 }
 
-export function ArchiveBookmark({ bookmarkId, isDemo = false }: ArchiveProps) {
+export function ArchiveBookmark({
+  bookmarkId,
+  isDemo = false,
+  onArchive,
+}: ArchiveProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleArchive() {
-    // Demo — toast and close dialog without hitting the DB
     if (isDemo) {
+      // Update local demo state via callback — no DB call
+      onArchive?.(bookmarkId);
       toast("Bookmark archived.", { icon: Icons.archive });
       return;
     }

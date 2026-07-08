@@ -22,18 +22,21 @@ import { toast } from "sonner";
 interface UnarchiveProps {
   bookmarkId: string;
   isDemo?: boolean;
+  onUnarchive?: (bookmarkId: string) => void;
 }
 
 export function UnarchiveBookmark({
   bookmarkId,
   isDemo = false,
+  onUnarchive,
 }: UnarchiveProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleUnarchive() {
-    // Demo — toast and close dialog without hitting the DB
     if (isDemo) {
+      // Update local demo state via callback — no DB call
+      onUnarchive?.(bookmarkId);
       toast("Bookmark restored.", { icon: Icons.unarchive });
       return;
     }
