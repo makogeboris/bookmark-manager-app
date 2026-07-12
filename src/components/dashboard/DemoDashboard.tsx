@@ -34,14 +34,14 @@ export default function DemoDashboard({
   }
 
   return (
-    <DashboardShell bookmarks={bookmarks} isDemo>
-      <BookmarkGrid
-        bookmarks={bookmarks}
-        isDemo
-        onPin={handlePin}
-        onArchive={handleArchive}
-        onUnarchive={handleUnarchive}
-      />
-    </DashboardShell>
+    // <DashboardShell bookmarks={bookmarks} isDemo>
+    <BookmarkGrid
+      bookmarks={bookmarks}
+      isDemo
+      onPin={handlePin}
+      onArchive={handleArchive}
+      onUnarchive={handleUnarchive}
+    />
+    // </DashboardShell>
   );
 }

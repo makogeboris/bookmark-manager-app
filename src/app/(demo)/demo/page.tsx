@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import data from "@/lib/data/data.json";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 import type { Bookmark } from "@/lib/types";
 import { DashboardProvider } from "@/lib/dashboard-context";
-import DemoDashboard from "@/components/dashboard/DemoDashboard";
+import BookmarkGridSkeleton from "@/components/dashboard/BookmarkGridSkeleton";
+import DemoBookmarkGridLoader from "@/components/dashboard/DemoBookmarkGridLoader";
 
 const initialBookmarks: Bookmark[] = data.bookmarks.map((b) => ({
   id: b.id,
@@ -20,7 +23,11 @@ const initialBookmarks: Bookmark[] = data.bookmarks.map((b) => ({
 export default function DemoPage() {
   return (
     <DashboardProvider>
-      <DemoDashboard initialBookmarks={initialBookmarks} />
+      <DashboardShell bookmarks={initialBookmarks} isDemo>
+        <Suspense fallback={<BookmarkGridSkeleton />}>
+          <DemoBookmarkGridLoader initialBookmarks={initialBookmarks} />
+        </Suspense>
+      </DashboardShell>
     </DashboardProvider>
   );
 }
