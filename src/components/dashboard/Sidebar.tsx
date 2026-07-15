@@ -5,7 +5,6 @@ import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { Icons } from "../shared/Icons";
 import Logo from "../shared/Logo";
-import { TagsSkeleton } from "./Skeletons";
 
 interface Tag {
   name: string;
@@ -21,7 +20,6 @@ interface SidebarProps {
   onTagToggle?: (tag: string) => void;
   onClearTags?: () => void;
   tags?: Tag[];
-  tagsLoading?: boolean;
   homeCount?: number;
   archivedCount?: number;
 }
@@ -35,7 +33,6 @@ export default function Sidebar({
   onTagToggle,
   onClearTags,
   tags,
-  tagsLoading = false,
   homeCount = 0,
   archivedCount = 0,
 }: SidebarProps) {
@@ -127,35 +124,31 @@ export default function Sidebar({
           )}
         </div>
 
-        {tagsLoading ? (
-          <TagsSkeleton />
-        ) : (
-          <ul className="scrollbar-thumb-sidebar-border flex-1 scrollbar-thin scrollbar-track-transparent space-y-px overflow-y-auto pr-0.5 pb-12">
-            {!tags || tags.length === 0 ? (
-              <li className="text-muted-foreground px-3 py-4 text-sm">
-                No tags yet. Add tags to your bookmarks to see them here.
-              </li>
-            ) : (
-              tags.map((tag) => {
-                const checked = selectedTags.includes(tag.name);
-                return (
-                  <li key={tag.name} className="w-full">
-                    <label className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground group flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base font-semibold transition-colors duration-150">
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={() => onTagToggle?.(tag.name)}
-                      />
-                      <span className="flex-1">{tag.name}</span>
-                      <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
-                        {tag.count}
-                      </span>
-                    </label>
-                  </li>
-                );
-              })
-            )}
-          </ul>
-        )}
+        <ul className="scrollbar-thumb-sidebar-border flex-1 scrollbar-thin scrollbar-track-transparent space-y-px overflow-y-auto pr-0.5 pb-12">
+          {!tags || tags.length === 0 ? (
+            <li className="text-muted-foreground px-3 py-4 text-sm">
+              No tags yet. Add tags to your bookmarks to see them here.
+            </li>
+          ) : (
+            tags.map((tag) => {
+              const checked = selectedTags.includes(tag.name);
+              return (
+                <li key={tag.name} className="w-full">
+                  <label className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground group flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base font-semibold transition-colors duration-150">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => onTagToggle?.(tag.name)}
+                    />
+                    <span className="flex-1">{tag.name}</span>
+                    <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+                      {tag.count}
+                    </span>
+                  </label>
+                </li>
+              );
+            })
+          )}
+        </ul>
       </div>
     </>
   );

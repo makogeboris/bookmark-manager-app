@@ -1,20 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import DashboardShell from "@/components/dashboard/DashboardShell";
-import BookmarkGrid from "@/components/dashboard/BookmarkGrid";
+import BookmarkGrid from "./BookmarkGrid";
 import type { Bookmark } from "@/lib/types";
 
-interface DemoDashboardProps {
+interface Props {
   initialBookmarks: Bookmark[];
 }
 
-export default function DemoDashboard({
-  initialBookmarks,
-}: DemoDashboardProps) {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks);
+export default function DemoBookmarkGrid({ initialBookmarks }: Props) {
+  const [bookmarks, setBookmarks] = useState(initialBookmarks);
 
-  // Local mutation handlers
   function handlePin(bookmarkId: string) {
     setBookmarks((prev) =>
       prev.map((b) => (b.id === bookmarkId ? { ...b, pinned: !b.pinned } : b)),
@@ -34,7 +30,6 @@ export default function DemoDashboard({
   }
 
   return (
-    // <DashboardShell bookmarks={bookmarks} isDemo>
     <BookmarkGrid
       bookmarks={bookmarks}
       isDemo
@@ -42,6 +37,5 @@ export default function DemoDashboard({
       onArchive={handleArchive}
       onUnarchive={handleUnarchive}
     />
-    // </DashboardShell>
   );
 }
