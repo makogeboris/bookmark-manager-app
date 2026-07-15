@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import type { Bookmark } from "@/lib/types";
-import { DashboardProvider } from "@/lib/dashboard-context";
 import BookmarkGrid from "@/components/dashboard/BookmarkGrid";
 
 export const metadata: Metadata = {
@@ -47,9 +46,5 @@ export default async function DashboardPage() {
     lastVisited: b.lastVisited?.toISOString() ?? null,
   }));
 
-  return (
-    <DashboardProvider>
-      <BookmarkGrid bookmarks={bookmarks} />
-    </DashboardProvider>
-  );
+  return <BookmarkGrid bookmarks={bookmarks} />;
 }

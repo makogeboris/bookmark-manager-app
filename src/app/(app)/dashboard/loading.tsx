@@ -1,5 +1,5 @@
-import { DashboardSkeleton } from "@/components/dashboard/Skeletons";
+import { BookmarkGridSkeleton } from "@/components/dashboard/Skeletons";
 
 export default function Loading() {
-  return <DashboardSkeleton />;
+  return <BookmarkGridSkeleton />;
 }
