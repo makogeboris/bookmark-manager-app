@@ -1,6 +1,11 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Icons } from "../shared/Icons";
+import Logo from "../shared/Logo";
+import AvatarDropdown from "./AvatarDropdown";
 
 export function DashboardSkeleton() {
   return (
@@ -27,33 +32,38 @@ export function SidebarSkeleton({ open = false }: SidebarSkeletonProps) {
     <>
       {/* Header */}
       <div className="relative px-5 pt-5 pb-3 sm:px-5">
-        {/* Logo */}
-        <Skeleton className="h-8 w-53 rounded-md" />
+        <Logo />
       </div>
 
       {/* Navigation */}
-      <nav className="w-full space-y-px px-4 py-4">
-        {[1, 2].map((item) => (
-          <div
-            key={item}
-            className="flex h-12 w-full items-center justify-between gap-2.5 rounded-sm px-3"
-          >
-            <div className="flex items-center gap-2.5">
-              <Skeleton className="size-5 rounded-sm" />
+      <nav className="space-y-px px-4 py-4">
+        <div className="bg-sidebar-accent text-sidebar-foreground flex h-12 items-center gap-2.5 rounded-sm px-3">
+          {Icons.home}
 
-              <Skeleton className="h-4 w-16" />
-            </div>
+          <div className="flex w-full items-center justify-between">
+            <span className="text-base font-medium">Home</span>
 
-            <Skeleton className="h-5 w-5 rounded-full" />
+            <Skeleton className="h-5 w-6 rounded-full" />
           </div>
-        ))}
+        </div>
+
+        <div className="text-muted-foreground flex h-12 items-center gap-2.5 rounded-sm px-3">
+          {Icons.archive}
+
+          <div className="flex w-full items-center justify-between">
+            <span className="text-base font-medium">Archived</span>
+
+            <Skeleton className="h-5 w-6 rounded-full" />
+          </div>
+        </div>
       </nav>
 
       {/* Tags */}
       <div className="flex min-h-0 flex-1 flex-col px-3">
         <div className="flex min-h-8.5 items-center justify-between pr-2 pb-2.5 pl-3">
-          <Skeleton className="h-3 w-10" />
-          <Skeleton className="h-3 w-12" />
+          <p className="text-sidebar-foreground/80 text-xs font-bold tracking-widest uppercase select-none">
+            Tags
+          </p>
         </div>
 
         <ul className="space-y-px overflow-hidden pb-12">
@@ -105,20 +115,44 @@ export function HeaderSkeleton() {
     <header>
       <div className="bg-sidebar border-sidebar-border flex items-center justify-between gap-2.5 border-b px-4 py-3 sm:px-8 sm:py-4">
         <div className="flex w-full items-center gap-2.5 sm:gap-4">
-          <Skeleton className="size-10 rounded-xl sm:size-11 lg:hidden" />
-
-          <Skeleton className="h-10 w-full max-w-65 sm:h-11 md:max-w-[320px]" />
+          <Button
+            className="sm:size-11 lg:hidden"
+            size="icon-lg"
+            variant="outlineMenu"
+            disabled
+          >
+            {Icons.menu}
+          </Button>
+          <Input
+            disabled
+            placeholder="Search bookmarks..."
+            className="max-w-65 md:max-w-[320px]"
+          />
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-4">
-          <Skeleton className="size-10 rounded-xl sm:size-11" />
+          <div className="flex">
+            <Button disabled type="button" size="icon-lg" className="md:hidden">
+              {Icons.plus}
+            </Button>
+            <Button
+              disabled
+              type="button"
+              className="hidden md:flex"
+              size="xxl"
+            >
+              {Icons.plus}
+              <span>Add Bookmark</span>
+            </Button>
+          </div>
 
-          <Skeleton className="size-10 rounded-full sm:size-11" />
+          <AvatarDropdown />
         </div>
       </div>
     </header>
   );
 }
+
 export function BookmarkGridSkeleton() {
   return (
     <div className="flex flex-col gap-5 px-4 py-6 sm:p-8">
