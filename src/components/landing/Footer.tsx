@@ -10,13 +10,18 @@ export function Footer() {
       style={{ zIndex: 1 }}
     >
       <div className="mx-auto flex flex-col items-center justify-between gap-6 md:flex-row">
-        <Link href="/">
+        <Link href="/" aria-label="Go to the Bookmark homepage">
           <Logo />
         </Link>
 
         <div className="flex flex-col items-center gap-3 md:flex-row">
           <div className="flex items-center gap-3">
-            <Link href="https://github.com/makogeboris/bookmark-manager-app">
+            <Link
+              href="https://github.com/makogeboris/bookmark-manager-app"
+              aria-label="View the Bookmark Manager source code on GitHub"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {Icons.github}
             </Link>
 

@@ -78,9 +78,9 @@ export default function BookmarkCard({
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="text-card-foreground truncate text-xl leading-snug font-bold">
+                  <h2 className="text-card-foreground truncate text-xl leading-snug font-bold">
                     {title}
-                  </h3>
+                  </h2>
                   <p className="text-muted-foreground truncate text-xs font-medium">
                     {displayUrl}
                   </p>

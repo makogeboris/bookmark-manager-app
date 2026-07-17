@@ -84,6 +84,7 @@ export default function ActionsDropdown({
         <Button
           size="icon"
           variant="outline"
+          aria-label="Open actions menu"
           className="border-border text-muted-foreground hover:text-foreground hover:bg-accent size-8 shrink-0 rounded-md bg-transparent"
         >
           {Icons.dots}

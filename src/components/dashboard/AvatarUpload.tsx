@@ -105,7 +105,7 @@ export function AvatarUpload({
       />
 
       <Avatar size="lg" className="size-14">
-        <AvatarImage src={displayImage} alt="Avatar" />
+        <AvatarImage src={displayImage} alt="" />
         <AvatarFallback className="text-lg">{initials}</AvatarFallback>
       </Avatar>
 

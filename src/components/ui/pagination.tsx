@@ -124,6 +124,12 @@ function PaginationEllipsis({
   );
 }
 
+function PaginationPages({ className, ...props }: React.ComponentProps<"li">) {
+  return (
+    <li className={cn("flex flex-1 justify-center", className)} {...props} />
+  );
+}
+
 export {
   Pagination,
   PaginationContent,
@@ -132,4 +138,5 @@ export {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationPages,
 };
