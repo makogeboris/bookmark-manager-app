@@ -24,21 +24,18 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div>
-          <Button variant="outlineMenu" size="icon-lg" className="md:hidden">
-            {Icons.sort}
-          </Button>
-          <Button
-            size="xl"
-            className="hidden items-center gap-2.5 p-3 md:flex"
-            variant="outlineMenu"
-          >
-            {Icons.sort}
-            <span className="text-foreground text-base font-semibold">
-              Sort by
-            </span>
-          </Button>
-        </div>
+        <Button
+          variant="outlineMenu"
+          size="xl"
+          aria-label="Sort bookmarks"
+          className="size-10 px-3 md:h-12 md:w-auto md:gap-2.5 md:p-3"
+        >
+          {Icons.sort}
+
+          <span className="sr-only md:not-sr-only md:text-base md:font-semibold">
+            Sort by
+          </span>
+        </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -47,6 +44,7 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
       >
         <DropdownMenuGroup>
           <DropdownMenuLabel className="sr-only">Sort By</DropdownMenuLabel>
+
           <DropdownMenuRadioGroup
             value={value}
             onValueChange={(v) => onChange(v as SortOption)}
@@ -57,12 +55,14 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
             >
               Recently added
             </DropdownMenuRadioItem>
+
             <DropdownMenuRadioItem
               value="recently-visited"
               className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"
             >
               Recently visited
             </DropdownMenuRadioItem>
+
             <DropdownMenuRadioItem
               value="most-visited"
               className="text-muted-foreground flex items-center justify-between gap-4 px-2! font-semibold"

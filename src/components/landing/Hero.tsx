@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
 
@@ -39,7 +38,7 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative overflow-hidden px-6 pt-32 pb-24"
+      className="relative overflow-hidden px-6 pt-40 pb-24"
       style={{ zIndex: 1 }}
     >
       <div
@@ -58,11 +57,6 @@ export function HeroSection() {
             transform: visible ? "translateY(0)" : "translateY(30px)",
           }}
         >
-          <div className="border-border bg-accent text-ring mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold">
-            <span className="bg-primary h-1.5 w-1.5 animate-pulse rounded-full" />
-            Now with browser extension support
-          </div>
-
           <h1
             className="text-foreground mb-6 font-extrabold tracking-tight"
             style={{
@@ -96,8 +90,6 @@ export function HeroSection() {
                 <span>
                   {pendingRoute === "signup" ? "Loading..." : "Start for free"}
                 </span>
-
-                {pendingRoute !== "signup" && <ChevronRight />}
               </span>
             </Button>
 

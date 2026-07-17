@@ -63,12 +63,13 @@ export default function AvatarDropdown({
           <Button
             variant="ghost"
             size="icon"
+            aria-label="Open user menu"
             className="[&:focus-visible>span]:ring-ring rounded-full focus-visible:outline-none [&:focus-visible>span]:rounded-full [&:focus-visible>span]:ring-2 [&:focus-visible>span]:ring-offset-2"
           >
             <Avatar size="lg">
               <AvatarImage
                 src={user?.image ?? "/images/image-avatar.webp"}
-                alt={user?.name ?? ""}
+                alt=""
               />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
@@ -86,7 +87,7 @@ export default function AvatarDropdown({
             <Avatar size="lg">
               <AvatarImage
                 src={user?.image ?? "/images/image-avatar.webp"}
-                alt={user?.name ?? ""}
+                alt=""
               />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>

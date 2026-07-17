@@ -216,7 +216,7 @@ export default function ManageProfile({
             {isDemo ? (
               // Demo
               <Avatar size="lg" className="size-14">
-                <AvatarImage src={DEMO_AVATAR} alt={DEMO_NAME} />
+                <AvatarImage src={DEMO_AVATAR} alt="" />
                 <AvatarFallback className="text-lg">{initials}</AvatarFallback>
               </Avatar>
             ) : (

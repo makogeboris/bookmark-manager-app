@@ -5,6 +5,7 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
+  PaginationPages,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
@@ -66,28 +67,25 @@ export default function PaginationComponent({
           />
         </PaginationItem>
 
-        <div className="flex">
+        <PaginationPages>
           {getPages().map((page, i) =>
             page === "ellipsis" ? (
-              <PaginationItem key={`ellipsis-${i}`}>
-                <PaginationEllipsis />
-              </PaginationItem>
+              <PaginationEllipsis key={`ellipsis-${i}`} />
             ) : (
-              <PaginationItem key={page}>
-                <PaginationLink
-                  href="#"
-                  isActive={page === currentPage}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onPageChange(page);
-                  }}
-                >
-                  {page}
-                </PaginationLink>
-              </PaginationItem>
+              <PaginationLink
+                key={page}
+                href="#"
+                isActive={page === currentPage}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPageChange(page);
+                }}
+              >
+                {page}
+              </PaginationLink>
             ),
           )}
-        </div>
+        </PaginationPages>
 
         <PaginationItem>
           <PaginationNext

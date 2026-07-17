@@ -65,7 +65,7 @@ export function Navbar() {
 
           <Link
             href="/signup"
-            className="bg-primary text-primary-foreground hover:bg-primary/80 flex items-center justify-center rounded-md px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200"
+            className="text-primary-foreground hover:bg-primary/80 flex items-center justify-center rounded-md bg-teal-700 px-5 py-2.5 text-center text-sm font-semibold transition-all duration-200"
           >
             Get started free
           </Link>
