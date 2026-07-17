@@ -1,7 +1,8 @@
 "use client";
 
-import { CldUploadWidget } from "next-cloudinary";
+import { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 import { updateAvatarAction } from "@/lib/actions/auth";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
@@ -18,64 +19,104 @@ export function AvatarUpload({
   onUploaded,
 }: AvatarUploadProps) {
   const { refetch } = useSession();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show local preview immediately
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+
+    setUploading(true);
+    try {
+      // 1 — get signature from our API route
+      const timestamp = Math.round(Date.now() / 1000);
+      const paramsToSign = {
+        timestamp,
+        folder: "bookmark-manager/avatars",
+      };
+
+      const sigRes = await fetch("/api/sign-cloudinary-params", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paramsToSign }),
+      });
+
+      if (!sigRes.ok) throw new Error("Failed to get upload signature");
+      const { signature, api_key } = await sigRes.json();
+
+      // 2 — upload directly to Cloudinary REST API
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", api_key);
+      formData.append("timestamp", String(timestamp));
+      formData.append("signature", signature);
+      formData.append("folder", "bookmark-manager/avatars");
+
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: "POST", body: formData },
+      );
+
+      if (!uploadRes.ok) throw new Error("Cloudinary upload failed");
+      const uploadData = await uploadRes.json();
+      const url: string = uploadData.secure_url;
+
+      // 3 — persist the URL to the user record
+      const result = await updateAvatarAction(url);
+      if (!result.success) throw new Error(result.message);
+
+      toast.success("Avatar updated.");
+      onUploaded?.(url);
+      refetch();
+    } catch (err) {
+      console.error("Avatar upload error:", err);
+      toast.error("Failed to upload avatar. Please try again.");
+      setPreview(null);
+    } finally {
+      setUploading(false);
+      // Reset input so the same file can be selected again
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  const displayImage = preview ?? currentImage ?? undefined;
 
   return (
-    <CldUploadWidget
-      // For signed uploads: signatureEndpoint only, no uploadPreset
-      signatureEndpoint="/api/sign-cloudinary-params"
-      options={{
-        folder: "bookmark-manager/avatars",
-        cropping: true,
-        croppingAspectRatio: 1,
-        showSkipCropButton: false,
-        sources: ["local", "camera"],
-        multiple: false,
-        maxFileSize: 5_000_000,
-        clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-      }}
-      onError={(error) => {
-        console.error("Cloudinary widget error:", error);
-        toast.error("Upload failed. Please try again.");
-      }}
-      onSuccess={async (result) => {
-        if (typeof result.info !== "object" || !result.info) return;
-        const info = result.info as { secure_url: string };
-        const url = info.secure_url;
-
-        const res = await updateAvatarAction(url);
-        if (res.success) {
-          toast.success("Avatar updated.");
-          onUploaded?.(url);
-          refetch();
-        } else {
-          toast.error(res.message ?? "Failed to update avatar.");
-        }
-      }}
+    <button
+      type="button"
+      onClick={() => inputRef.current?.click()}
+      disabled={uploading}
+      className="group relative shrink-0 disabled:cursor-not-allowed disabled:opacity-70"
+      aria-label="Change avatar"
     >
-      {({ open, isLoading }) => (
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={() => {
-            if (!isLoading) open();
-          }}
-          className="group relative shrink-0 disabled:opacity-50"
-          aria-label="Change avatar"
-        >
-          <Avatar size="lg" className="size-14">
-            <AvatarImage
-              src={currentImage ?? "/images/image-avatar.webp"}
-              alt="Avatar"
-            />
-            <AvatarFallback className="text-lg">{initials}</AvatarFallback>
-          </Avatar>
-          <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-            <span className="text-xs font-semibold text-white">
-              {isLoading ? "Loading..." : "Edit"}
-            </span>
-          </div>
-        </button>
-      )}
-    </CldUploadWidget>
+      {/* Hidden file input */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      <Avatar size="lg" className="size-14">
+        <AvatarImage src={displayImage} alt="Avatar" />
+        <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+      </Avatar>
+
+      {/* Overlay */}
+      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+        {uploading ? (
+          <Spinner className="size-4 text-white" />
+        ) : (
+          <span className="text-xs font-semibold text-white">Edit</span>
+        )}
+      </div>
+    </button>
   );
 }
