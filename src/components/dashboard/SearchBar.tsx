@@ -5,25 +5,23 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { useDashboard } from "@/lib/dashboard-context";
-import { useRef, useState, useTransition } from "react";
+import { useRef, useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function SearchBar() {
-  const { setSearch } = useDashboard();
-  const [value, setValue] = useState("");
+  const { search, setSearch } = useDashboard();
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const next = e.target.value;
-    setValue(next);
+
     startTransition(() => {
       setSearch(next);
     });
   }
 
   function handleClear() {
-    setValue("");
     setSearch("");
     inputRef.current?.focus();
   }
@@ -44,7 +42,7 @@ export default function SearchBar() {
             className="border-accent pr-8 pl-10"
             type="text"
             placeholder="Search by title..."
-            value={value}
+            value={search}
             onChange={handleChange}
           />
 
@@ -56,7 +54,7 @@ export default function SearchBar() {
           <span className="absolute top-1/2 right-3 -translate-y-1/2">
             {isPending ? (
               <Spinner className="text-muted-foreground pointer-events-none size-4" />
-            ) : value ? (
+            ) : search ? (
               <button
                 type="button"
                 onClick={handleClear}
