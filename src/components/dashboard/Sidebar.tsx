@@ -132,18 +132,28 @@ export default function Sidebar({
           ) : (
             tags.map((tag) => {
               const checked = selectedTags.includes(tag.name);
+              const checkboxId = `tag-${tag.name}`;
+
               return (
                 <li key={tag.name} className="w-full">
-                  <label className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground group flex cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-base font-semibold transition-colors duration-150">
+                  <div className="text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground flex items-center gap-2 rounded-sm px-3 py-2 transition-colors">
                     <Checkbox
+                      id={checkboxId}
                       checked={checked}
                       onCheckedChange={() => onTagToggle?.(tag.name)}
                     />
-                    <span className="flex-1">{tag.name}</span>
-                    <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
-                      {tag.count}
-                    </span>
-                  </label>
+
+                    <label
+                      htmlFor={checkboxId}
+                      className="flex flex-1 cursor-pointer items-center justify-between text-base font-semibold"
+                    >
+                      <span>{tag.name}</span>
+
+                      <span className="border-sidebar-border bg-sidebar-accent text-sidebar-foreground/60 flex h-5 min-w-5 items-center justify-center rounded-full border px-1.5 text-xs font-medium">
+                        {tag.count}
+                      </span>
+                    </label>
+                  </div>
                 </li>
               );
             })
