@@ -140,15 +140,16 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="flex">
-          <Button type="button" size="icon-lg" className="md:hidden">
-            {Icons.plus}
-          </Button>
-          <Button type="button" className="hidden md:flex" size="xxl">
-            {Icons.plus}
-            <span>Add Bookmark</span>
-          </Button>
-        </div>
+        <Button
+          type="button"
+          size="xxl"
+          className="px-3 md:px-5"
+          aria-label="Add bookmark"
+        >
+          {Icons.plus}
+
+          <span className="sr-only md:not-sr-only">Add Bookmark</span>
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="gap-6 sm:max-w-xl md:gap-8">

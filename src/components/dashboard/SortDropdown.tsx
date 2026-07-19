@@ -27,7 +27,6 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
         <Button
           variant="outlineMenu"
           size="xl"
-          aria-label="Sort bookmarks"
           className="size-10 px-3 md:h-12 md:w-auto md:gap-2.5 md:p-3"
         >
           {Icons.sort}
