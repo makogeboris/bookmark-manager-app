@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "../ui/separator";
@@ -10,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { motion } from "motion/react";
 
 interface BookmarkCardProps {
   title: string;
@@ -49,131 +52,151 @@ export default function BookmarkCard({
 
   return (
     <TooltipProvider>
-      <Card className="bg-card card-shadow rounded-10 border-transparent pb-0 shadow-none">
-        <CardContent className="flex min-h-full flex-col justify-between gap-4 px-0">
-          <div className="flex flex-col gap-4 px-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="border-accent bg-background flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
-                  {favicon ? (
-                    <img
-                      width={44}
-                      height={44}
-                      src={favicon}
-                      alt={title}
-                      className="size-11 object-contain"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        const parent = e.currentTarget.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `<span class="text-muted-foreground text-xs font-bold">${title.charAt(0).toUpperCase()}</span>`;
-                        }
-                      }}
-                    />
-                  ) : (
-                    <span className="text-muted-foreground text-xs font-bold">
-                      {title.charAt(0).toUpperCase()}
-                    </span>
-                  )}
-                </div>
+      <motion.div
+        layout
+        transition={{
+          layout: {
+            duration: 0.3,
+            ease: "easeInOut",
+          },
+        }}
+        className="h-full"
+      >
+        <Card className="bg-card card-shadow rounded-10 h-full border-transparent pb-0 shadow-none">
+          <CardContent className="flex min-h-full flex-col justify-between gap-4 px-0">
+            <div className="flex flex-col gap-4 px-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="border-accent bg-background flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border">
+                    {favicon ? (
+                      <img
+                        width={44}
+                        height={44}
+                        src={favicon}
+                        alt={title}
+                        className="size-11 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                          const parent = e.currentTarget.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<span class="text-muted-foreground text-xs font-bold">${title.charAt(0).toUpperCase()}</span>`;
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground text-xs font-bold">
+                        {title.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
 
-                <div className="min-w-0">
-                  <h2 className="text-card-foreground truncate text-xl leading-snug font-bold">
-                    {title}
-                  </h2>
-                  <p className="text-muted-foreground truncate text-xs font-medium">
-                    {displayUrl}
-                  </p>
-                </div>
-              </div>
-
-              <ActionsDropdown
-                bookmark={bookmark}
-                isDemo={isDemo}
-                onPin={onPin}
-                onArchive={onArchive}
-                onUnarchive={onUnarchive}
-              />
-            </div>
-
-            <Separator />
-
-            {description && (
-              <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-                {description}
-              </p>
-            )}
-
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="secondary"
-                    className="bg-secondary text-accent-foreground rounded-xs border-0 px-2 py-1 text-xs font-medium"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <CardFooter className="border-t-accent flex items-center justify-between border-t px-4 py-3">
-            <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
-              {visitCount !== undefined && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex cursor-default items-center gap-1.5">
-                      {Icons.eye}
-                      {visitCount}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      {visitCount === 1 ? "1 visit" : `${visitCount} visits`}
+                  <div className="min-w-0">
+                    <h2 className="text-card-foreground truncate text-xl leading-snug font-bold">
+                      {title}
+                    </h2>
+                    <p className="text-muted-foreground truncate text-xs font-medium">
+                      {displayUrl}
                     </p>
-                  </TooltipContent>
-                </Tooltip>
+                  </div>
+                </div>
+
+                <ActionsDropdown
+                  bookmark={bookmark}
+                  isDemo={isDemo}
+                  onPin={onPin}
+                  onArchive={onArchive}
+                  onUnarchive={onUnarchive}
+                />
+              </div>
+
+              <Separator />
+
+              {description && (
+                <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
+                  {description}
+                </p>
               )}
 
-              {dateAdded && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex cursor-default items-center gap-1.5">
-                      {Icons.clock}
-                      {dateAdded}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Added {dateAdded}</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-
-              {dateVisited && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="flex cursor-default items-center gap-1.5">
-                      {Icons.calendar}
-                      {dateVisited}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Last visited {dateVisited}</p>
-                  </TooltipContent>
-                </Tooltip>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="bg-secondary text-accent-foreground rounded-xs border-0 px-2 py-1 text-xs font-medium"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               )}
             </div>
 
-            {pinned && (
-              <span className="text-foreground size-4 shrink-0">
-                {Icons.pin}
-              </span>
-            )}
-          </CardFooter>
-        </CardContent>
-      </Card>
+            <CardFooter className="border-t-accent flex items-center justify-between border-t px-4 py-3">
+              <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-xs">
+                {visitCount !== undefined && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex cursor-default items-center gap-1.5">
+                        {Icons.eye}
+                        {visitCount}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {visitCount === 1 ? "1 visit" : `${visitCount} visits`}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+
+                {dateAdded && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex cursor-default items-center gap-1.5">
+                        {Icons.clock}
+                        {dateAdded}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Added {dateAdded}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+
+                {dateVisited && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="flex cursor-default items-center gap-1.5">
+                        {Icons.calendar}
+                        {dateVisited}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Last visited {dateVisited}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
+
+              {pinned && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 10,
+                  }}
+                  className="text-foreground size-4 shrink-0"
+                >
+                  {Icons.pin}
+                </motion.span>
+              )}
+            </CardFooter>
+          </CardContent>
+        </Card>
+      </motion.div>
     </TooltipProvider>
   );
 }

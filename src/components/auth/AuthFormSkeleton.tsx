@@ -45,12 +45,6 @@ export function LoginSkeleton({ className }: { className?: string }) {
             <div className="mt-2 flex justify-center">
               <Skeleton className="h-4 w-56" />
             </div>
-
-            {/* Separator */}
-            <Skeleton className="my-2 h-px w-full sm:my-3" />
-
-            {/* Demo button */}
-            <Skeleton className="h-11 w-full rounded-md" />
           </div>
         </CardContent>
       </Card>

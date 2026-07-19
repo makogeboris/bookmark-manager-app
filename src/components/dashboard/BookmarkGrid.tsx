@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion, type Variants, type Easing } from "motion/react";
 import BookmarkCard from "@/components/dashboard/BookmarkCard";
 import SortDropdown from "@/components/dashboard/SortDropdown";
 import PaginationComponent from "./Pagination";
@@ -9,6 +10,38 @@ import type { Bookmark } from "@/lib/types";
 import { format, parseISO } from "date-fns";
 
 const PER_PAGE = 9;
+
+const easeOutQuart: Easing = [0.4, 0, 0.2, 1];
+
+// Animation variants for staggered children
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+// Subtle animation for each card
+const cardVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 15,
+    scale: 0.98,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: easeOutQuart,
+    },
+  },
+};
 
 interface BookmarkGridProps {
   bookmarks: Bookmark[];
@@ -109,13 +142,25 @@ export default function BookmarkGrid({
   }, [bookmarks, selectedTags, search, sort, showArchived]);
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const safePage = Math.min(currentPage, totalPages || 1);
+
+  // Derive safePage from current state
+  const safePage = useMemo(() => {
+    if (currentPage > totalPages) {
+      return Math.max(1, totalPages);
+    }
+    return currentPage;
+  }, [currentPage, totalPages]);
+
   const paginated = filtered.slice(
     (safePage - 1) * PER_PAGE,
     safePage * PER_PAGE,
   );
 
   const filterKey = `${selectedTags.join(",")}-${showArchived}-${search}-${sort}`;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="flex flex-col gap-5 px-4 py-6 sm:p-8">
@@ -143,33 +188,43 @@ export default function BookmarkGrid({
         </div>
       ) : (
         <div className="flex flex-col gap-8">
-          <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(288px,1fr))] gap-8">
+          <motion.div
+            key={`grid-${filterKey}-${safePage}`}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid w-full grid-cols-[repeat(auto-fill,minmax(288px,1fr))] gap-8"
+          >
             {paginated.map((bookmark) => (
-              <BookmarkCard
+              <motion.div
                 key={`${bookmark.id}-${filterKey}`}
-                bookmark={bookmark}
-                title={bookmark.title}
-                url={bookmark.url}
-                favicon={bookmark.favicon}
-                description={bookmark.description}
-                tags={bookmark.tags}
-                visitCount={bookmark.visitCount}
-                dateAdded={formatDate(bookmark.createdAt)}
-                dateVisited={formatDate(bookmark.lastVisited)}
-                pinned={bookmark.pinned}
-                isArchived={bookmark.isArchived}
-                isDemo={isDemo}
-                onPin={onPin}
-                onArchive={onArchive}
-                onUnarchive={onUnarchive}
-              />
+                variants={cardVariants}
+              >
+                <BookmarkCard
+                  bookmark={bookmark}
+                  title={bookmark.title}
+                  url={bookmark.url}
+                  favicon={bookmark.favicon}
+                  description={bookmark.description}
+                  tags={bookmark.tags}
+                  visitCount={bookmark.visitCount}
+                  dateAdded={formatDate(bookmark.createdAt)}
+                  dateVisited={formatDate(bookmark.lastVisited)}
+                  pinned={bookmark.pinned}
+                  isArchived={bookmark.isArchived}
+                  isDemo={isDemo}
+                  onPin={onPin}
+                  onArchive={onArchive}
+                  onUnarchive={onUnarchive}
+                />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           <PaginationComponent
             currentPage={safePage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
           />
         </div>
       )}
