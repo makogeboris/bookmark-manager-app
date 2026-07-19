@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,6 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Logo from "../shared/Logo";
@@ -45,7 +44,6 @@ export function LoginForm({
   const [resendStatus, setResendStatus] = useState<string | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [isDemoPending, startDemoTransition] = useTransition();
 
   const {
     register,
@@ -104,14 +102,7 @@ export function LoginForm({
     }
   }
 
-  function handleDemoLogin() {
-    startDemoTransition(() => {
-      router.push("/demo");
-    });
-  }
-
-  const authInProgress =
-    isSubmitting || isGoogleLoading || isResending || isDemoPending;
+  const authInProgress = isSubmitting || isGoogleLoading || isResending;
 
   return (
     <>
@@ -260,24 +251,6 @@ export function LoginForm({
                       </Link>
                     </FieldDescription>
                   </Field>
-
-                  <FieldSeparator className="my-2 sm:my-3" />
-
-                  <Button
-                    size="lg"
-                    variant="demo"
-                    type="button"
-                    onClick={handleDemoLogin}
-                    disabled={authInProgress}
-                    className="px-4 py-5 text-sm sm:px-6 sm:py-5.5 sm:text-base"
-                  >
-                    <span className="flex items-center gap-2">
-                      {isDemoPending && <Spinner data-icon="inline-start" />}
-                      <span>
-                        {isDemoPending ? "Loading demo..." : "Try the demo"}
-                      </span>
-                    </span>
-                  </Button>
                 </FieldGroup>
               </form>
             </CardContent>
