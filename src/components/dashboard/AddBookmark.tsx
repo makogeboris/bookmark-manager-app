@@ -143,12 +143,12 @@ export default function AddBookmark({ isDemo = false }: AddBookmarkProps) {
         <Button
           type="button"
           size="xxl"
-          className="px-3 md:px-5"
+          className="size-10 px-3 md:h-11.5 md:w-auto md:px-5"
           aria-label="Add bookmark"
         >
           {Icons.plus}
 
-          <span className="sr-only md:not-sr-only">Add Bookmark</span>
+          <span className="hidden md:inline">Add Bookmark</span>
         </Button>
       </DialogTrigger>
 
